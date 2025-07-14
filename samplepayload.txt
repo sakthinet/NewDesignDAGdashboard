@@ -1,0 +1,86 @@
+  "dag_run_id": "string",
+  "dag_id": "string",
+  "logical_date": "2025-07-14T05:12:19.758Z",
+  "queued_at": "2025-07-14T05:12:19.758Z",
+  "start_date": "2025-07-14T05:12:19.758Z",
+  "end_date": "2025-07-14T05:12:19.758Z",
+  "data_interval_start": "2025-07-14T05:12:19.758Z",
+  "data_interval_end": "2025-07-14T05:12:19.758Z",
+  "run_after": "2025-07-14T05:12:19.758Z",
+  "last_scheduling_decision": "2025-07-14T05:12:19.758Z",
+  "run_type": "backfill",
+  "state": "queued",
+  "triggered_by": "cli",
+  "conf": {
+    "additionalProp1": {}
+  },
+  "note": "string",
+  "dag_versions": [
+    {
+      "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "version_number": 0,
+      "dag_id": "string",
+      "bundle_name": "string",
+      "bundle_version": "string",
+      "created_at": "2025-07-14T05:12:19.759Z",
+      "bundle_url": "string"
+    }
+  ],
+  "bundle_version": "string"
+}
+
+----------------------------------------------------------
+
+{
+  "dag_run_id": "string",
+  "data_interval_start": "2025-07-14T05:12:19.755Z",
+  "data_interval_end": "2025-07-14T05:12:19.755Z",
+  "logical_date": "2025-07-14T05:12:19.755Z",
+  "run_after": "2025-07-14T05:12:19.755Z",
+  "conf": {
+    "additionalProp1": {}
+  },
+  "note": "string"
+}
+
+-------------------
+/api/v2/dags/{dag_id}/dagRuns
+
+{
+  "dag_run_id": "manual_sakthi__2025-07-14T05:18:26.880Z",
+  "data_interval_start": "2025-07-14T05:18:26.880Z",
+  "data_interval_end": "2025-07-14T05:18:26.880Z",
+  "logical_date": "2025-07-14T05:18:26.880Z",
+  "run_after": "2025-07-14T05:18:26.880Z",
+  "conf": {
+    "Application Name": "InfoArchiveApp",
+    "Default Schema Name": "SAP",
+    "Locale": "en-US",
+    "Schema Name": "SAP_HR_Department"
+  },
+  "note": "Triggered via API"
+}
+----------------------------------
+
+{
+  "dag_run_id": "manual_sakthi__2025-07-14T05:18:26.880Z",
+  "data_interval_start": "2025-07-14T05:18:26.880Z",
+  "data_interval_end": "2025-07-14T05:18:26.880Z",
+  "logical_date": "2025-07-14T05:18:26.880Z",
+  "run_after": "2025-07-14T05:18:26.880Z",
+  "conf": {
+    "Application Name": "InfoArchiveApp",
+    "Default Schema Name": "SAP",
+    "Locale": "en-US",
+    "Schema Name": "SAP_HR_Department"
+  },
+  "note": "Triggered via API"
+}
+
+eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiaXNzIjpbXSwiYXVkIjoiYXBhY2hlLWFpcmZsb3ciLCJuYmYiOjE3NTI0NzYzODksImV4cCI6MTc1MjU2Mjc4OSwiaWF0IjoxNzUyNDc2Mzg5fQ.XXS4Xpl7jCyh18hDrq4mlWnBb5VF7QPQQrGcNWH6W1MzSVT1G8gg7BG646wY3o_pt1oXSthz_PVQ9Bb3fpEI9Q"
+
+1.IA_CSV_Metadata_Generator
+2.IA_XML_Generator
+3.StructureDataArchivalToIA
+
+2.
