@@ -84,3 +84,47 @@ eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiaXNzIjpbXSwiYXVkIjoiYXBhY2h
 3.StructureDataArchivalToIA
 
 2.
+---------------------------------------------------------------------------------
+
+TCS ECM
+Workflow Design Studio - Data Transformer/
+
+Migration Dashboard - Dashboard
+
+Migration Workspace Running Jobs - Jobs
+
+Migration Metrics - Metrics
+
+Migration Reports - Reports
+
+Migration Orchestration Engine - Management Console
+
+---------
+
+Structured Data Archival - InfoArchive Workflow Builder
+
+Step 1 - Prerequisites and Source Data Upload - Prerequisites and Source Data Upload
+           6. CSV file name less than 32 characters and size less than 2 GB - Remove
+		   
+		   
+		  Message box remove - first page
+		  
+		  Step 2.1: - remove - Generate schema button -2 instance
+		  
+		  STEP 3: View Schema - Download IA Schema button
+		           Workspace Table (Calling IA_XML_Generator DAG Run) - remove
+				   IA_XML_Generator Task Instances - Remove
+				   
+	Step 4: InfoArchive Data Upload - Table data upload to InfoArchive
+	
+	Configure the transformation parameters and upload processed data to InfoArchive - Select the IA Table to upload and the chunk size
+	
+	
+	
+		  DAG Run script - Bearer_Token remove
+		  
+		  Schema_Name - should come first 
+		  
+		  Process Status - Job Details
+		  
+		  Transform CSV Data dump to IA XML Format and Upload
