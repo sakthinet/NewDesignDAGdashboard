@@ -1,0 +1,2136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frontend Architecture & Communication Patterns</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #f8fafc;
+            --accent-color: #0ea5e9;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --border-color: #e2e8f0;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .presentation-container {
+            background: white;
+            min-height: 100vh;
+            box-shadow: 0 0 50px rgba(0,0,0,0.1);
+        }
+
+        .hero-section {
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
+            padding: 4rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='m0 40l40-40h-40z'/%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .architecture-card {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .architecture-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        .pattern-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 8px rgba(37, 99, 235, 0.3);
+        }
+
+        .pattern-icon i {
+            font-size: 28px;
+            color: white;
+        }
+
+        .diagram {
+            background: var(--secondary-color);
+            border: 2px dashed var(--border-color);
+            border-radius: 12px;
+            padding: 2.5rem;
+            text-align: center;
+            margin: 2rem 0;
+            position: relative;
+        }
+
+        .flow-diagram {
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+
+        .flow-box {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 2px solid var(--primary-color);
+            min-width: 140px;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .flow-arrow {
+            font-size: 28px;
+            color: var(--primary-color);
+        }
+
+        .code-snippet {
+            background: #0f172a;
+            color: #e2e8f0;
+            padding: 2rem;
+            border-radius: 12px;
+            font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+            font-size: 14px;
+            margin: 1.5rem 0;
+            overflow-x: auto;
+            position: relative;
+            border: 1px solid #334155;
+        }
+
+        .code-snippet::before {
+            content: 'Click to copy';
+            position: absolute;
+            top: 8px;
+            right: 12px;
+            font-size: 11px;
+            color: #64748b;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .code-snippet:hover::before {
+            opacity: 1;
+        }
+
+        .highlight {
+            background: linear-gradient(135deg, #fef3c7, #fed7aa);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border-left: 4px solid var(--accent-color);
+            margin: 1.5rem 0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .tech-badge {
+            display: inline-block;
+            background: var(--primary-color);
+            color: white;
+            padding: 0.4rem 1rem;
+            border-radius: 50px;
+            font-size: 0.875rem;
+            margin: 0.25rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .tech-badge:hover {
+            background: var(--accent-color);
+            transform: translateY(-1px);
+        }
+
+        .tech-badge.enterprise {
+            background: var(--success-color);
+        }
+
+        .tech-badge.ui-lib {
+            background: var(--warning-color);
+        }
+
+        .tech-badge.state-mgmt {
+            background: #8b5cf6;
+        }
+
+        .tech-badge.styling {
+            background: #06b6d4;
+        }
+
+        .section-title {
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--accent-color);
+            padding-bottom: 0.5rem;
+            margin-bottom: 2.5rem;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -3px;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: var(--primary-color);
+            border-radius: 2px;
+        }
+
+        .nav-pills .nav-link {
+            border-radius: 50px;
+            margin: 0 0.25rem;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .nav-pills .nav-link.active {
+            background-color: var(--primary-color);
+            box-shadow: 0 4px 8px rgba(37, 99, 235, 0.3);
+        }
+
+        .communication-flow {
+            background: linear-gradient(45deg, #f8fafc, #e2e8f0);
+            padding: 2.5rem;
+            border-radius: 16px;
+            margin: 2rem 0;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.06);
+        }
+
+        .layer-card {
+            background: white;
+            border-left: 5px solid var(--primary-color);
+            padding: 2rem;
+            margin: 1.5rem 0;
+            border-radius: 0 12px 12px 0;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.07);
+            transition: all 0.3s ease;
+        }
+
+        .layer-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .metric-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .metric-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-label {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .stack-category {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .stack-category h6 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .hero-section {
+                padding: 2rem 0;
+            }
+            
+            .flow-diagram {
+                flex-direction: column;
+            }
+            
+            .architecture-card {
+                padding: 2rem;
+            }
+            
+            .pattern-icon {
+                width: 60px;
+                height: 60px;
+            }
+        }
+
+        .complexity-indicator {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: var(--success-color);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .complexity-indicator.advanced {
+            background: var(--warning-color);
+        }
+
+        .complexity-indicator.enterprise {
+            background: var(--danger-color);
+        }
+
+        .architecture-layer {
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.05), rgba(14, 165, 233, 0.05));
+            border: 1px solid rgba(37, 99, 235, 0.1);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 1.5rem 0;
+            position: relative;
+        }
+
+        .architecture-layer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+            border-radius: 12px 12px 0 0;
+        }
+
+        /* SVG Architecture Diagram Styles */
+        .architecture-diagram-container {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            overflow-x: auto;
+        }
+
+        .architecture-diagram {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .layer-title {
+            font-size: 16px;
+            font-weight: 600;
+            fill: #1e293b;
+        }
+
+        .layer-subtitle {
+            font-size: 12px;
+            fill: #64748b;
+        }
+
+        .component-text {
+            font-size: 10px;
+            font-weight: 500;
+            fill: white;
+            text-anchor: middle;
+            dominant-baseline: middle;
+        }
+
+        .flow-label {
+            font-size: 10px;
+            font-weight: 500;
+            fill: #64748b;
+        }
+
+        .sidebar-title {
+            font-size: 14px;
+            font-weight: 700;
+            fill: #1e293b;
+        }
+
+        .sidebar-section {
+            font-size: 11px;
+            font-weight: 600;
+            fill: #374151;
+        }
+
+        .tech-text-small {
+            font-size: 8px;
+            font-weight: 500;
+            fill: white;
+            text-anchor: middle;
+            dominant-baseline: middle;
+        }
+
+        /* Interactive styles */
+        .diagram-layer {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .diagram-layer:hover {
+            stroke-width: 3;
+            filter: brightness(1.1);
+        }
+
+        .component-group {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .component-group:hover .component-box {
+            filter: brightness(1.2);
+            transform: scale(1.05);
+            transform-origin: center;
+        }
+
+        .component-box {
+            transition: all 0.3s ease;
+        }
+
+        .data-flow {
+            opacity: 0.7;
+            transition: opacity 0.3s ease;
+        }
+
+        .data-flow:hover {
+            opacity: 1;
+            stroke-width: 4;
+        }
+
+        .tech-badge-small {
+            transition: all 0.3s ease;
+        }
+
+        .tech-badge-small:hover {
+            filter: brightness(1.1);
+        }
+
+        /* Responsive diagram */
+        @media (max-width: 768px) {
+            .architecture-diagram-container {
+                padding: 1rem;
+            }
+            
+            .tech-stack-sidebar {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation-container">
+        <!-- Hero Section -->
+        <div class="hero-section">
+            <div class="container">
+                <div class="hero-content text-center">
+                    <h1 class="display-4 fw-bold mb-3">
+                        <i class="bi bi-diagram-3"></i>
+                        Enterprise Frontend Architecture
+                    </h1>
+                    <p class="lead mb-4">React + Apache Airflow + Modern Full-Stack Integration</p>
+                    <div class="row justify-content-center">
+                        <div class="col-md-10">
+                            <p class="mb-0">Advanced enterprise architecture leveraging React 18, TypeScript, React Query, Radix UI, Tailwind CSS, and comprehensive state management patterns for robust Airflow DAG orchestration and data pipeline management.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Pills -->
+        <div class="container-fluid bg-light py-3">
+            <div class="container">
+                <ul class="nav nav-pills justify-content-center" id="architectureNav" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="overview-tab" data-bs-toggle="pill" data-bs-target="#overview" type="button">
+                            <i class="bi bi-house-door"></i> Overview
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="tech-stack-tab" data-bs-toggle="pill" data-bs-target="#tech-stack" type="button">
+                            <i class="bi bi-stack"></i> Tech Stack
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="architecture-tab" data-bs-toggle="pill" data-bs-target="#architecture" type="button">
+                            <i class="bi bi-diagram-3"></i> Architecture
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="communication-tab" data-bs-toggle="pill" data-bs-target="#communication" type="button">
+                            <i class="bi bi-arrow-left-right"></i> Communication
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="patterns-tab" data-bs-toggle="pill" data-bs-target="#patterns" type="button">
+                            <i class="bi bi-puzzle"></i> Patterns
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="implementation-tab" data-bs-toggle="pill" data-bs-target="#implementation" type="button">
+                            <i class="bi bi-code-slash"></i> Implementation
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Tab Content -->
+        <div class="tab-content" id="architectureTabContent">
+            <!-- Overview Tab -->
+            <div class="tab-pane fade show active" id="overview" role="tabpanel">
+                <div class="container py-5">
+                    <h2 class="section-title">
+                        <i class="bi bi-info-circle"></i> Enterprise System Overview
+                    </h2>
+
+                    <!-- High Level Architecture -->
+                    <div class="communication-flow">
+                        <h4 class="mb-4"><i class="bi bi-diagram-2"></i> Enterprise Data Flow Architecture</h4>
+                        <div class="flow-diagram">
+                            <div class="flow-box">
+                                <i class="bi bi-person-workspace"></i>
+                                <br><strong>React Frontend</strong>
+                                <small class="d-block">TypeScript + Radix UI</small>
+                            </div>
+                            <div class="flow-arrow">
+                                <i class="bi bi-arrow-right"></i>
+                            </div>
+                            <div class="flow-box">
+                                <i class="bi bi-cloud-arrow-up"></i>
+                                <br><strong>React Query</strong>
+                                <small class="d-block">Server State Management</small>
+                            </div>
+                            <div class="flow-arrow">
+                                <i class="bi bi-arrow-right"></i>
+                            </div>
+                            <div class="flow-box">
+                                <i class="bi bi-server"></i>
+                                <br><strong>Express API</strong>
+                                <small class="d-block">TypeScript + Drizzle ORM</small>
+                            </div>
+                            <div class="flow-arrow">
+                                <i class="bi bi-arrow-right"></i>
+                            </div>
+                            <div class="flow-box">
+                                <i class="bi bi-diagram-3-fill"></i>
+                                <br><strong>Airflow 3.x</strong>
+                                <small class="d-block">DAG Orchestration</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Key Metrics -->
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <div class="architecture-card">
+                                <div class="complexity-indicator enterprise">Enterprise</div>
+                                <div class="pattern-icon">
+                                    <i class="bi bi-graph-up"></i>
+                                </div>
+                                <h4>Architecture Complexity Metrics</h4>
+                                <p class="text-secondary mb-4">Comprehensive analysis of system architecture depth and integration points</p>
+                                <div class="metrics-grid">
+                                    <div class="metric-card">
+                                        <div class="metric-number">50+</div>
+                                        <div class="metric-label">NPM Dependencies</div>
+                                    </div>
+                                    <div class="metric-card">
+                                        <div class="metric-number">15+</div>
+                                        <div class="metric-label">Radix UI Components</div>
+                                    </div>
+                                    <div class="metric-card">
+                                        <div class="metric-number">8</div>
+                                        <div class="metric-label">Custom Hooks</div>
+                                    </div>
+                                    <div class="metric-card">
+                                        <div class="metric-number">25+</div>
+                                        <div class="metric-label">API Endpoints</div>
+                                    </div>
+                                    <div class="metric-card">
+                                        <div class="metric-number">3</div>
+                                        <div class="metric-label">Context Providers</div>
+                                    </div>
+                                    <div class="metric-card">
+                                        <div class="metric-number">4</div>
+                                        <div class="metric-label">Architectural Layers</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="architecture-card">
+                                <div class="pattern-icon">
+                                    <i class="bi bi-shield-check"></i>
+                                </div>
+                                <h4>Enterprise Features</h4>
+                                <p class="text-secondary mb-3">Production-ready capabilities</p>
+                                <div class="highlight">
+                                    <h6><i class="bi bi-star"></i> Key Capabilities</h6>
+                                    <ul class="mb-0">
+                                        <li><strong>Advanced Grid:</strong> ag-Grid Enterprise for complex data visualization</li>
+                                        <li><strong>Type Safety:</strong> Full TypeScript coverage with strict mode</li>
+                                        <li><strong>Animation:</strong> Framer Motion for smooth UX</li>
+                                        <li><strong>Form Management:</strong> React Hook Form with validation</li>
+                                        <li><strong>Database ORM:</strong> Drizzle ORM with type safety</li>
+                                        <li><strong>Authentication:</strong> Passport.js integration</li>
+                                        <li><strong>Real-time:</strong> WebSocket support (ws)</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tech Stack Tab -->
+            <div class="tab-pane fade" id="tech-stack" role="tabpanel">
+                <div class="container py-5">
+                    <h2 class="section-title">
+                        <i class="bi bi-stack"></i> Complete Technology Stack
+                    </h2>
+
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="stack-category">
+                                <h6><i class="bi bi-laptop"></i> Frontend Core</h6>
+                                <span class="tech-badge">React 18.3.1</span>
+                                <span class="tech-badge">TypeScript 5.6.3</span>
+                                <span class="tech-badge">Vite 7.0.5</span>
+                                <span class="tech-badge">Wouter (Routing)</span>
+                            </div>
+
+                            <div class="stack-category">
+                                <h6><i class="bi bi-palette"></i> UI & Styling</h6>
+                                <span class="tech-badge ui-lib">Radix UI (15+ components)</span>
+                                <span class="tech-badge styling">Tailwind CSS 3.4</span>
+                                <span class="tech-badge styling">Tailwind Animate</span>
+                                <span class="tech-badge ui-lib">Lucide React Icons</span>
+                                <span class="tech-badge ui-lib">React Icons</span>
+                                <span class="tech-badge styling">Class Variance Authority</span>
+                                <span class="tech-badge styling">clsx / Tailwind Merge</span>
+                            </div>
+
+                            <div class="stack-category">
+                                <h6><i class="bi bi-gear"></i> State & Data Management</h6>
+                                <span class="tech-badge state-mgmt">@tanstack/react-query</span>
+                                <span class="tech-badge state-mgmt">React Context API</span>
+                                <span class="tech-badge state-mgmt">React Hook Form</span>
+                                <span class="tech-badge state-mgmt">Zod Validation</span>
+                                <span class="tech-badge state-mgmt">Custom Hooks</span>
+                            </div>
+
+                            <div class="stack-category">
+                                <h6><i class="bi bi-grid"></i> Data Visualization</h6>
+                                <span class="tech-badge enterprise">ag-Grid Enterprise</span>
+                                <span class="tech-badge ui-lib">@tanstack/react-table</span>
+                                <span class="tech-badge ui-lib">Recharts 2.15</span>
+                                <span class="tech-badge ui-lib">Embla Carousel</span>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6">
+                            <div class="stack-category">
+                                <h6><i class="bi bi-server"></i> Backend Core</h6>
+                                <span class="tech-badge">Express.js 4.21</span>
+                                <span class="tech-badge">Node.js + TypeScript</span>
+                                <span class="tech-badge">ESBuild</span>
+                                <span class="tech-badge">Cross-env</span>
+                            </div>
+
+                            <div class="stack-category">
+                                <h6><i class="bi bi-shield-lock"></i> Authentication & Security</h6>
+                                <span class="tech-badge enterprise">Passport.js</span>
+                                <span class="tech-badge enterprise">Passport Local</span>
+                                <span class="tech-badge enterprise">Express Session</span>
+                                <span class="tech-badge enterprise">JWT Authentication</span>
+                                <span class="tech-badge enterprise">Memory Store</span>
+                            </div>
+
+                            <div class="stack-category">
+                                <h6><i class="bi bi-tools"></i> Development & Build</h6>
+                                <span class="tech-badge">TSX (TypeScript Runner)</span>
+                                <span class="tech-badge">PostCSS + Autoprefixer</span>
+                                <span class="tech-badge">@replit/vite-plugins</span>
+                                <span class="tech-badge">Runtime Error Overlay</span>
+                            </div>
+
+                            <div class="stack-category">
+                                <h6><i class="bi bi-lightning"></i> Advanced Features</h6>
+                                <span class="tech-badge ui-lib">Framer Motion</span>
+                                <span class="tech-badge enterprise">WebSocket (ws)</span>
+                                <span class="tech-badge ui-lib">Resizable Panels</span>
+                                <span class="tech-badge ui-lib">Date FNS</span>
+                                <span class="tech-badge ui-lib">Input OTP</span>
+                                <span class="tech-badge ui-lib">Vaul (Drawer)</span>
+                                <span class="tech-badge ui-lib">Next Themes</span>
+                                <span class="tech-badge enterprise">Multer (File Upload)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="highlight">
+                        <h5><i class="bi bi-award"></i> Architecture Quality Score</h5>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="text-center">
+                                    <div class="metric-number">95%</div>
+                                    <div class="metric-label">TypeScript Coverage</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="text-center">
+                                    <div class="metric-number">A+</div>
+                                    <div class="metric-label">Component Reusability</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="text-center">
+                                    <div class="metric-number">Enterprise</div>
+                                    <div class="metric-label">Scalability Level</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="text-center">
+                                    <div class="metric-number">5/5</div>
+                                    <div class="metric-label">Modern Standards</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Architecture Tab -->
+            <div class="tab-pane fade" id="architecture" role="tabpanel">
+                <div class="container py-5">
+                    <h2 class="section-title">
+                        <i class="bi bi-building"></i> Multi-Layer Enterprise Architecture
+                    </h2>
+
+                    <!-- Interactive Architecture Diagram -->
+                    <div class="architecture-card mb-5">
+                        <h4 class="mb-4"><i class="bi bi-diagram-3-fill"></i> Interactive Architecture Diagram</h4>
+                        <p class="text-secondary mb-4">Click on components to see detailed information about each layer</p>
+                        
+                        <div class="architecture-diagram-container">
+                            <svg viewBox="0 0 1000 580" class="architecture-diagram w-100" style="max-height: 580px;">
+                                <!-- Background gradients -->
+                                <defs>
+                                    <linearGradient id="layerGradient1" x1="0%" y1="0%" x2="100%" y2="0%">
+                                        <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:0.1" />
+                                        <stop offset="100%" style="stop-color:#1d4ed8;stop-opacity:0.1" />
+                                    </linearGradient>
+                                    <linearGradient id="layerGradient2" x1="0%" y1="0%" x2="100%" y2="0%">
+                                        <stop offset="0%" style="stop-color:#10b981;stop-opacity:0.1" />
+                                        <stop offset="100%" style="stop-color:#059669;stop-opacity:0.1" />
+                                    </linearGradient>
+                                    <linearGradient id="layerGradient3" x1="0%" y1="0%" x2="100%" y2="0%">
+                                        <stop offset="0%" style="stop-color:#f59e0b;stop-opacity:0.1" />
+                                        <stop offset="100%" style="stop-color:#d97706;stop-opacity:0.1" />
+                                    </linearGradient>
+                                    <linearGradient id="layerGradient4" x1="0%" y1="0%" x2="100%" y2="0%">
+                                        <stop offset="0%" style="stop-color:#ef4444;stop-opacity:0.1" />
+                                        <stop offset="100%" style="stop-color:#dc2626;stop-opacity:0.1" />
+                                    </linearGradient>
+                                </defs>
+
+                                <!-- Layer 1: Presentation Layer -->
+                                <rect x="50" y="50" width="900" height="100" fill="url(#layerGradient1)" stroke="#3b82f6" stroke-width="2" rx="8" class="diagram-layer" data-layer="presentation"/>
+                                <text x="70" y="80" class="layer-title">Presentation Layer</text>
+                                <text x="70" y="100" class="layer-subtitle">React 18 + TypeScript + Radix UI + Tailwind CSS</text>
+                                
+                                <!-- Presentation Layer Components -->
+                                <g class="component-group" data-component="react-components">
+                                    <rect x="70" y="110" width="120" height="25" fill="#3b82f6" rx="4" class="component-box"/>
+                                    <text x="130" y="127" class="component-text">React Components</text>
+                                </g>
+                                <g class="component-group" data-component="radix-ui">
+                                    <rect x="200" y="110" width="100" height="25" fill="#1d4ed8" rx="4" class="component-box"/>
+                                    <text x="250" y="127" class="component-text">Radix UI</text>
+                                </g>
+                                <g class="component-group" data-component="tailwind">
+                                    <rect x="310" y="110" width="100" height="25" fill="#0ea5e9" rx="4" class="component-box"/>
+                                    <text x="360" y="127" class="component-text">Tailwind CSS</text>
+                                </g>
+                                <g class="component-group" data-component="framer-motion">
+                                    <rect x="420" y="110" width="120" height="25" fill="#6366f1" rx="4" class="component-box"/>
+                                    <text x="480" y="127" class="component-text">Framer Motion</text>
+                                </g>
+
+                                <!-- Layer 2: State Management -->
+                                <rect x="50" y="170" width="900" height="100" fill="url(#layerGradient2)" stroke="#10b981" stroke-width="2" rx="8" class="diagram-layer" data-layer="state"/>
+                                <text x="70" y="200" class="layer-title">State Management Layer</text>
+                                <text x="70" y="220" class="layer-subtitle">React Query + Context API + Custom Hooks</text>
+                                
+                                <!-- State Management Components -->
+                                <g class="component-group" data-component="react-query">
+                                    <rect x="70" y="230" width="130" height="25" fill="#10b981" rx="4" class="component-box"/>
+                                    <text x="135" y="247" class="component-text">React Query</text>
+                                </g>
+                                <g class="component-group" data-component="context-api">
+                                    <rect x="210" y="230" width="120" height="25" fill="#059669" rx="4" class="component-box"/>
+                                    <text x="270" y="247" class="component-text">Context API</text>
+                                </g>
+                                <g class="component-group" data-component="custom-hooks">
+                                    <rect x="340" y="230" width="120" height="25" fill="#047857" rx="4" class="component-box"/>
+                                    <text x="400" y="247" class="component-text">Custom Hooks</text>
+                                </g>
+                                <g class="component-group" data-component="workflow-context">
+                                    <rect x="470" y="230" width="150" height="25" fill="#065f46" rx="4" class="component-box"/>
+                                    <text x="545" y="247" class="component-text">Workflow Context</text>
+                                </g>
+
+                                <!-- Layer 3: API Communication -->
+                                <rect x="50" y="290" width="900" height="100" fill="url(#layerGradient3)" stroke="#f59e0b" stroke-width="2" rx="8" class="diagram-layer" data-layer="api"/>
+                                <text x="70" y="320" class="layer-title">API Communication Layer</text>
+                                <text x="70" y="340" class="layer-subtitle">Express.js + JWT Auth + Smart Caching + WebSocket</text>
+                                
+                                <!-- API Layer Components -->
+                                <g class="component-group" data-component="express">
+                                    <rect x="70" y="350" width="100" height="25" fill="#f59e0b" rx="4" class="component-box"/>
+                                    <text x="120" y="367" class="component-text">Express.js</text>
+                                </g>
+                                <g class="component-group" data-component="jwt-auth">
+                                    <rect x="180" y="350" width="100" height="25" fill="#d97706" rx="4" class="component-box"/>
+                                    <text x="230" y="367" class="component-text">JWT Auth</text>
+                                </g>
+                                <g class="component-group" data-component="smart-cache">
+                                    <rect x="290" y="350" width="120" height="25" fill="#b45309" rx="4" class="component-box"/>
+                                    <text x="350" y="367" class="component-text">Smart Cache</text>
+                                </g>
+                                <g class="component-group" data-component="websocket">
+                                    <rect x="420" y="350" width="100" height="25" fill="#92400e" rx="4" class="component-box"/>
+                                    <text x="470" y="367" class="component-text">WebSocket</text>
+                                </g>
+
+                                <!-- Layer 4: External Integration -->
+                                <rect x="50" y="410" width="900" height="100" fill="url(#layerGradient4)" stroke="#ef4444" stroke-width="2" rx="8" class="diagram-layer" data-layer="external"/>
+                                <text x="70" y="440" class="layer-title">External Integration Layer</text>
+                                <text x="70" y="460" class="layer-subtitle">Apache Airflow 3.x + File System + Network Paths</text>
+                                
+                                <!-- External Integration Components -->
+                                <g class="component-group" data-component="airflow">
+                                    <rect x="70" y="470" width="140" height="25" fill="#ef4444" rx="4" class="component-box"/>
+                                    <text x="140" y="487" class="component-text">Apache Airflow</text>
+                                </g>
+                                <g class="component-group" data-component="file-system">
+                                    <rect x="220" y="470" width="120" height="25" fill="#dc2626" rx="4" class="component-box"/>
+                                    <text x="280" y="487" class="component-text">File System</text>
+                                </g>
+                                <g class="component-group" data-component="network-paths">
+                                    <rect x="350" y="470" width="130" height="25" fill="#b91c1c" rx="4" class="component-box"/>
+                                    <text x="415" y="487" class="component-text">Network Paths</text>
+                                </g>
+
+                                <!-- Data Flow Arrows -->
+                                <!-- Presentation to State -->
+                                <path d="M 500 150 L 500 170" stroke="#4ade80" stroke-width="3" fill="none" marker-end="url(#arrowhead)" class="data-flow"/>
+                                
+                                <!-- State to API -->
+                                <path d="M 500 270 L 500 290" stroke="#4ade80" stroke-width="3" fill="none" marker-end="url(#arrowhead)" class="data-flow"/>
+                                
+                                <!-- API to External -->
+                                <path d="M 500 390 L 500 410" stroke="#4ade80" stroke-width="3" fill="none" marker-end="url(#arrowhead)" class="data-flow"/>
+
+                                <!-- Bidirectional arrows -->
+                                <path d="M 520 410 L 520 390" stroke="#60a5fa" stroke-width="2" fill="none" marker-end="url(#arrowhead-blue)" class="data-flow"/>
+                                <path d="M 520 290 L 520 270" stroke="#60a5fa" stroke-width="2" fill="none" marker-end="url(#arrowhead-blue)" class="data-flow"/>
+                                <path d="M 520 170 L 520 150" stroke="#60a5fa" stroke-width="2" fill="none" marker-end="url(#arrowhead-blue)" class="data-flow"/>
+
+                                <!-- Arrow markers -->
+                                <defs>
+                                    <marker id="arrowhead" markerWidth="10" markerHeight="7" 
+                                        refX="9" refY="3.5" orient="auto">
+                                        <polygon points="0 0, 10 3.5, 0 7" fill="#4ade80" />
+                                    </marker>
+                                    <marker id="arrowhead-blue" markerWidth="10" markerHeight="7" 
+                                        refX="9" refY="3.5" orient="auto">
+                                        <polygon points="0 0, 10 3.5, 0 7" fill="#60a5fa" />
+                                    </marker>
+                                </defs>
+
+                                <!-- Side annotations -->
+                                <text x="540" y="230" class="flow-label">Server State</text>
+                                <text x="540" y="350" class="flow-label">HTTP/REST</text>
+                                <text x="540" y="450" class="flow-label">DAG Operations</text>
+
+                                <!-- Technology badges on the right -->
+                                <g class="tech-stack-sidebar">
+                                    <rect x="700" y="50" width="200" height="380" fill="rgba(248, 250, 252, 0.8)" stroke="#e2e8f0" stroke-width="1" rx="8"/>
+                                    <text x="720" y="80" class="sidebar-title">Technology Stack</text>
+                                    
+                                    <!-- Frontend Technologies -->
+                                    <text x="720" y="110" class="sidebar-section">Frontend</text>
+                                    <rect x="720" y="120" width="80" height="18" fill="#3b82f6" rx="9" class="tech-badge-small"/>
+                                    <text x="760" y="132" class="tech-text-small">React 18</text>
+                                    <rect x="810" y="120" width="75" height="18" fill="#1d4ed8" rx="9" class="tech-badge-small"/>
+                                    <text x="847" y="132" class="tech-text-small">TypeScript</text>
+                                    
+                                    <rect x="720" y="145" width="75" height="18" fill="#0ea5e9" rx="9" class="tech-badge-small"/>
+                                    <text x="757" y="157" class="tech-text-small">Radix UI</text>
+                                    <rect x="805" y="145" width="80" height="18" fill="#6366f1" rx="9" class="tech-badge-small"/>
+                                    <text x="845" y="157" class="tech-text-small">Tailwind</text>
+
+                                    <!-- State Management -->
+                                    <text x="720" y="185" class="sidebar-section">State Management</text>
+                                    <rect x="720" y="195" width="90" height="18" fill="#10b981" rx="9" class="tech-badge-small"/>
+                                    <text x="765" y="207" class="tech-text-small">React Query</text>
+                                    <rect x="820" y="195" width="65" height="18" fill="#059669" rx="9" class="tech-badge-small"/>
+                                    <text x="852" y="207" class="tech-text-small">Context</text>
+
+                                    <!-- Backend -->
+                                    <text x="720" y="240" class="sidebar-section">Backend</text>
+                                    <rect x="720" y="250" width="80" height="18" fill="#f59e0b" rx="9" class="tech-badge-small"/>
+                                    <text x="760" y="262" class="tech-text-small">Express.js</text>
+                                    <rect x="810" y="250" width="75" height="18" fill="#d97706" rx="9" class="tech-badge-small"/>
+                                    <text x="847" y="262" class="tech-text-small">JWT Auth</text>
+
+                                    <!-- External Integration -->
+                                    <text x="720" y="295" class="sidebar-section">Integration</text>
+                                    <rect x="720" y="305" width="75" height="18" fill="#ef4444" rx="9" class="tech-badge-small"/>
+                                    <text x="757" y="317" class="tech-text-small">Airflow 3.x</text>
+                                    <rect x="805" y="305" width="80" height="18" fill="#dc2626" rx="9" class="tech-badge-small"/>
+                                    <text x="845" y="317" class="tech-text-small">WebSocket</text>
+
+                                    <!-- Performance -->
+                                    <text x="720" y="350" class="sidebar-section">Performance</text>
+                                    <rect x="720" y="360" width="75" height="18" fill="#06b6d4" rx="9" class="tech-badge-small"/>
+                                    <text x="757" y="372" class="tech-text-small">Caching</text>
+                                    <rect x="805" y="360" width="80" height="18" fill="#0891b2" rx="9" class="tech-badge-small"/>
+                                    <text x="845" y="372" class="tech-text-small">Memoization</text>
+
+                                    <!-- Build Tools -->
+                                    <text x="720" y="405" class="sidebar-section">Build & Dev</text>
+                                    <rect x="720" y="415" width="60" height="18" fill="#84cc16" rx="9" class="tech-badge-small"/>
+                                    <text x="750" y="427" class="tech-text-small">Vite 7</text>
+                                    <rect x="790" y="415" width="70" height="18" fill="#65a30d" rx="9" class="tech-badge-small"/>
+                                    <text x="825" y="427" class="tech-text-small">ESBuild</text>
+                                </g>
+                            </svg>
+                        </div>
+
+                        <!-- Component Details Panel -->
+                        <div id="component-details" class="mt-4 p-3 border rounded-lg bg-light" style="display: none;">
+                            <h6 id="component-title" class="fw-bold"></h6>
+                            <p id="component-description" class="mb-2"></p>
+                            <div id="component-technologies"></div>
+                        </div>
+                    </div>
+
+                    <!-- Architecture Layers -->
+                    <div class="architecture-layer">
+                        <h5><i class="bi bi-display"></i> Presentation Layer (React + Radix UI)</h5>
+                        <p><strong>Components:</strong> DagDashboard, Sidebar, FileUpload, SchemaGenerator, ag-Grid Tables</p>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p class="mb-2"><strong>UI Framework:</strong></p>
+                                <ul>
+                                    <li>Radix UI primitives for accessibility</li>
+                                    <li>Tailwind CSS for utility-first styling</li>
+                                    <li>Framer Motion for advanced animations</li>
+                                    <li>Responsive design with mobile-first approach</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <p class="mb-2"><strong>Advanced Components:</strong></p>
+                                <ul>
+                                    <li>ag-Grid Enterprise for complex data tables</li>
+                                    <li>React Hook Form with validation</li>
+                                    <li>Multi-step workflow wizards</li>
+                                    <li>Real-time status indicators</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="code-snippet">
+// Advanced React Component with Radix UI
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { motion } from "framer-motion";
+
+const DagDashboard = () =&gt; {
+  const { data: dags, isLoading } = useQuery({
+    queryKey: ['dags'],
+    queryFn: () =&gt; airflowApi.getDags(),
+    staleTime: 30000,
+    refetchInterval: 60000
+  });
+
+  return (
+    &lt;motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="dashboard-container"
+    &gt;
+      {dags?.map(dag =&gt; (
+        &lt;DagCard key={dag.dag_id} dag={dag} /&gt;
+      ))}
+    &lt;/motion.div&gt;
+  );
+};</div>
+                    </div>
+
+                    <div class="architecture-layer">
+                        <h5><i class="bi bi-cloud-arrow-up"></i> Server State Management (React Query)</h5>
+                        <p><strong>Components:</strong> @tanstack/react-query, Smart Caching, Background Refetching</p>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p class="mb-2"><strong>Query Management:</strong></p>
+                                <ul>
+                                    <li>Automatic background refetching</li>
+                                    <li>Optimistic updates for mutations</li>
+                                    <li>Request deduplication</li>
+                                    <li>Infinite queries for pagination</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <p class="mb-2"><strong>Cache Strategies:</strong></p>
+                                <ul>
+                                    <li>Stale-while-revalidate pattern</li>
+                                    <li>Tag-based cache invalidation</li>
+                                    <li>Selective data updates</li>
+                                    <li>Offline-first capabilities</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="code-snippet">
+// React Query Implementation
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+
+export function useAirflowDags() {
+  const queryClient = useQueryClient();
+  
+  const dagsQuery = useQuery({
+    queryKey: ['dags', 'list'],
+    queryFn: () =&gt; airflowApi.getDags(),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    refetchInterval: 30 * 1000, // 30 seconds
+    refetchOnWindowFocus: true,
+    retry: 3,
+    retryDelay: attemptIndex =&gt; Math.min(1000 * 2 ** attemptIndex, 30000)
+  });
+
+  const triggerMutation = useMutation({
+    mutationFn: ({ dagId, conf }) =&gt; airflowApi.triggerDag(dagId, conf),
+    onSuccess: (data, { dagId }) =&gt; {
+      // Invalidate and refetch related queries
+      queryClient.invalidateQueries({ queryKey: ['dags', dagId] });
+      queryClient.invalidateQueries({ queryKey: ['dag-runs', dagId] });
+    },
+    onError: (error) =&gt; {
+      toast.error(`Failed to trigger DAG: ${error.message}`);
+    }
+  });
+
+  return { ...dagsQuery, triggerDag: triggerMutation.mutate };
+}</div>
+                    </div>
+
+                    <div class="architecture-layer">
+                        <h5><i class="bi bi-gear-fill"></i> Client State Management (Context + Custom Hooks)</h5>
+                        <p><strong>Components:</strong> WorkflowContext, Custom Hooks, Local State, Form State</p>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p class="mb-2"><strong>Global State:</strong></p>
+                                <ul>
+                                    <li>Workflow session management</li>
+                                    <li>Multi-step form progress</li>
+                                    <li>User preferences and themes</li>
+                                    <li>Real-time connection status</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <p class="mb-2"><strong>Advanced Patterns:</strong></p>
+                                <ul>
+                                    <li>Compound components pattern</li>
+                                    <li>Custom hooks for business logic</li>
+                                    <li>State machines for complex workflows</li>
+                                    <li>Optimistic UI updates</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="code-snippet">
+// Advanced Workflow Context with TypeScript
+interface WorkflowSession {
+  id: string;
+  startTime: Date;
+  selectedFiles: UploadedFile[];
+  completedSteps: Step[];
+  currentStep: Step;
+  schemaConfig?: SchemaConfig;
+  metadata: Record&lt;string, unknown&gt;;
+}
+
+const WorkflowProvider: React.FC&lt;PropsWithChildren&gt; = ({ children }) =&gt; {
+  const [session, setSession] = useState&lt;WorkflowSession | null&gt;(null);
+  const queryClient = useQueryClient();
+
+  const initializeSession = useCallback((files: UploadedFile[]) =&gt; {
+    const newSession: WorkflowSession = {
+      id: `session_${nanoid()}`,
+      startTime: new Date(),
+      selectedFiles: files,
+      completedSteps: ['upload'],
+      currentStep: 'configure',
+      metadata: {}
+    };
+    setSession(newSession);
+    
+    // Prefetch related data
+    queryClient.prefetchQuery({
+      queryKey: ['schema', 'templates'],
+      queryFn: () =&gt; api.getSchemaTemplates()
+    });
+  }, [queryClient]);
+
+  const value = useMemo(() =&gt; ({
+    session,
+    initializeSession,
+    // ... other methods
+  }), [session, initializeSession]);
+
+  return (
+    &lt;WorkflowContext.Provider value={value}&gt;
+      {children}
+    &lt;/WorkflowContext.Provider&gt;
+  );
+};</div>
+                    </div>
+
+                    <div class="architecture-layer">
+                        <h5><i class="bi bi-cloud"></i> API Communication Layer (Express + TypeScript)</h5>
+                        <p><strong>Components:</strong> Express Router, JWT Authentication, Smart Caching, Error Handling</p>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p class="mb-2"><strong>API Features:</strong></p>
+                                <ul>
+                                    <li>RESTful API design with TypeScript</li>
+                                    <li>JWT token management with refresh</li>
+                                    <li>Request/response validation with Zod</li>
+                                    <li>Multi-layer caching strategy</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <p class="mb-2"><strong>Integration Points:</strong></p>
+                                <ul>
+                                    <li>Apache Airflow 3.x REST API</li>
+                                    <li>File system operations (UNC paths)</li>
+                                    <li>WebSocket real-time updates</li>
+                                    <li>External service integrations</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="code-snippet">
+// Express API with Advanced Error Handling
+import { Router } from 'express';
+import { z } from 'zod';
+
+const router = Router();
+
+// Advanced middleware with validation
+const validateRequest = (schema: z.ZodSchema) =&gt; {
+  return (req: Request, res: Response, next: NextFunction) =&gt; {
+    try {
+      req.body = schema.parse(req.body);
+      next();
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({
+          message: 'Validation error',
+          errors: error.errors
+        });
+      }
+      next(error);
+    }
+  };
+};
+
+// Smart caching with Redis-like interface
+class AdvancedCache {
+  private cache = new Map&lt;string, CacheEntry&gt;();
+  
+  async get&lt;T&gt;(key: string): Promise&lt;T | null&gt; {
+    const entry = this.cache.get(key);
+    if (!entry || Date.now() &gt; entry.expiry) {
+      this.cache.delete(key);
+      return null;
+    }
+    return entry.data as T;
+  }
+  
+  async setWithTags&lt;T&gt;(key: string, data: T, ttl: number, tags: string[]) {
+    this.cache.set(key, {
+      data, expiry: Date.now() + ttl, tags
+    });
+  }
+}</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Communication Tab -->
+            <div class="tab-pane fade" id="communication" role="tabpanel">
+                <div class="container py-5">
+                    <h2 class="section-title">
+                        <i class="bi bi-arrow-left-right"></i> Advanced Communication Patterns
+                    </h2>
+
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="architecture-card">
+                                <div class="complexity-indicator advanced">Advanced</div>
+                                <div class="pattern-icon">
+                                    <i class="bi bi-diagram-2"></i>
+                                </div>
+                                <h4>React Query + API Integration</h4>
+                                <p class="text-secondary">Advanced server state management with intelligent caching</p>
+                                
+                                <div class="diagram">
+                                    <h6>Query Lifecycle</h6>
+                                    <div class="flow-diagram flex-column">
+                                        <div class="flow-box">Component Mount</div>
+                                        <div class="flow-arrow"><i class="bi bi-arrow-down"></i></div>
+                                        <div class="flow-box">React Query</div>
+                                        <div class="flow-arrow"><i class="bi bi-arrow-down"></i></div>
+                                        <div class="flow-box">Cache Check</div>
+                                        <div class="flow-arrow"><i class="bi bi-arrow-down"></i></div>
+                                        <div class="flow-box">API Request</div>
+                                        <div class="flow-arrow"><i class="bi bi-arrow-down"></i></div>
+                                        <div class="flow-box">Background Sync</div>
+                                    </div>
+                                </div>
+
+                                <div class="code-snippet">
+// React Query with Advanced Features
+const useDagDetails = (dagId: string) =&gt; {
+  const queryClient = useQueryClient();
+  
+  return useQuery({
+    queryKey: ['dag', dagId, 'details'],
+    queryFn: async () =&gt; {
+      const [dag, runs, tasks] = await Promise.all([
+        airflowApi.getDag(dagId),
+        airflowApi.getDagRuns(dagId, 10),
+        airflowApi.getTasks(dagId)
+      ]);
+      return { dag, runs, tasks };
+    },
+    staleTime: 2 * 60 * 1000, // 2 minutes
+    enabled: !!dagId,
+    refetchOnMount: 'always',
+    refetchOnWindowFocus: true,
+    select: useCallback((data) =&gt; ({
+      ...data,
+      recentFailures: data.runs.filter(run =&gt; run.state === 'failed')
+    }), []),
+    onSuccess: (data) =&gt; {
+      // Prefetch related data
+      if (data.dag?.dependencies?.length &gt; 0) {
+        data.dag.dependencies.forEach(depId =&gt; {
+          queryClient.prefetchQuery({
+            queryKey: ['dag', depId, 'status'],
+            queryFn: () =&gt; airflowApi.getDagStatus(depId)
+          });
+        });
+      }
+    }
+  });
+};</div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6">
+                            <div class="architecture-card">
+                                <div class="complexity-indicator enterprise">Enterprise</div>
+                                <div class="pattern-icon">
+                                    <i class="bi bi-shield-check"></i>
+                                </div>
+                                <h4>JWT + Session Management</h4>
+                                <p class="text-secondary">Enterprise-grade authentication with automatic token refresh</p>
+                                
+                                <div class="diagram">
+                                    <h6>Auth Flow</h6>
+                                    <div class="flow-diagram flex-column">
+                                        <div class="flow-box">Login Request</div>
+                                        <div class="flow-arrow"><i class="bi bi-arrow-down"></i></div>
+                                        <div class="flow-box">Passport.js</div>
+                                        <div class="flow-arrow"><i class="bi bi-arrow-down"></i></div>
+                                        <div class="flow-box">JWT Generation</div>
+                                        <div class="flow-arrow"><i class="bi bi-arrow-down"></i></div>
+                                        <div class="flow-box">Session Store</div>
+                                        <div class="flow-arrow"><i class="bi bi-arrow-down"></i></div>
+                                        <div class="flow-box">Auto Refresh</div>
+                                    </div>
+                                </div>
+
+                                <div class="code-snippet">
+// Advanced Authentication System
+import passport from 'passport';
+import { Strategy as LocalStrategy } from 'passport-local';
+import jwt from 'jsonwebtoken';
+
+// Passport configuration
+passport.use(new LocalStrategy({
+  usernameField: 'email',
+  passwordField: 'password'
+}, async (email, password, done) =&gt; {
+  try {
+    const user = await db.query.users.findFirst({
+      where: eq(users.email, email)
+    });
+    
+    if (!user || !await bcrypt.compare(password, user.passwordHash)) {
+      return done(null, false);
+    }
+    
+    return done(null, user);
+  } catch (error) {
+    return done(error);
+  }
+}));
+
+// JWT refresh mechanism
+class TokenManager {
+  private refreshTokens = new Map&lt;string, RefreshToken&gt;();
+  
+  generateTokens(userId: string) {
+    const accessToken = jwt.sign(
+      { userId, type: 'access' },
+      JWT_SECRET,
+      { expiresIn: '15m' }
+    );
+    
+    const refreshToken = jwt.sign(
+      { userId, type: 'refresh' },
+      REFRESH_SECRET,
+      { expiresIn: '7d' }
+    );
+    
+    this.refreshTokens.set(refreshToken, {
+      userId, expiresAt: Date.now() + 7 * 24 * 60 * 60 * 1000
+    });
+    
+    return { accessToken, refreshToken };
+  }
+}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col-lg-6">
+                            <div class="architecture-card">
+                                <div class="complexity-indicator advanced">Advanced</div>
+                                <div class="pattern-icon">
+                                    <i class="bi bi-broadcast"></i>
+                                </div>
+                                <h4>WebSocket Real-time Updates</h4>
+                                <p class="text-secondary">Real-time DAG status and execution monitoring</p>
+                                
+                                <div class="code-snippet">
+// WebSocket Integration
+import { useEffect, useRef } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
+
+export const useWebSocket = () =&gt; {
+  const ws = useRef&lt;WebSocket | null&gt;(null);
+  const queryClient = useQueryClient();
+  
+  useEffect(() =&gt; {
+    ws.current = new WebSocket(WS_URL);
+    
+    ws.current.onmessage = (event) =&gt; {
+      const message = JSON.parse(event.data);
+      
+      switch (message.type) {
+        case 'dag_state_change':
+          queryClient.invalidateQueries({
+            queryKey: ['dag', message.dagId]
+          });
+          break;
+          
+        case 'task_instance_update':
+          queryClient.setQueryData(
+            ['dag', message.dagId, 'runs', message.runId],
+            (old) =&gt; updateTaskInstance(old, message.data)
+          );
+          break;
+          
+        case 'system_alert':
+          toast.warning(message.message);
+          break;
+      }
+    };
+    
+    return () =&gt; ws.current?.close();
+  }, [queryClient]);
+  
+  const sendMessage = useCallback((message: any) =&gt; {
+    if (ws.current?.readyState === WebSocket.OPEN) {
+      ws.current.send(JSON.stringify(message));
+    }
+  }, []);
+  
+  return { sendMessage };
+};</div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6">
+                            <div class="architecture-card">
+                                <div class="complexity-indicator enterprise">Enterprise</div>
+                                <div class="pattern-icon">
+                                    <i class="bi bi-files"></i>
+                                </div>
+                                <h4>File Upload & Processing</h4>
+                                <p class="text-secondary">Enterprise file handling with network path resolution</p>
+                                
+                                <div class="code-snippet">
+// Advanced File Processing
+import multer from 'multer';
+import { z } from 'zod';
+
+const fileUploadSchema = z.object({
+  originalname: z.string().min(1),
+  mimetype: z.enum(['text/csv', 'application/vnd.ms-excel']),
+  size: z.number().max(10 * 1024 * 1024) // 10MB limit
+});
+
+const upload = multer({
+  storage: multer.diskStorage({
+    destination: (req, file, cb) =&gt; {
+      const uploadPath = path.join(UPLOAD_DIR, req.user.id);
+      fs.ensureDirSync(uploadPath);
+      cb(null, uploadPath);
+    },
+    filename: (req, file, cb) =&gt; {
+      const ext = path.extname(file.originalname);
+      const name = path.basename(file.originalname, ext);
+      const timestamp = Date.now();
+      cb(null, `${name}_${timestamp}${ext}`);
+    }
+  }),
+  limits: { fileSize: 10 * 1024 * 1024 },
+  fileFilter: (req, file, cb) =&gt; {
+    try {
+      fileUploadSchema.parse(file);
+      cb(null, true);
+    } catch {
+      cb(new Error('Invalid file type or size'));
+    }
+  }
+});
+
+// Network path resolution for enterprise environments
+class NetworkPathManager {
+  async resolveUNCPath(rawPath: string): Promise&lt;ResolvedPath&gt; {
+    const formattedPath = this.formatUNCPath(rawPath);
+    
+    try {
+      await fs.access(formattedPath);
+      return { path: formattedPath, isLocal: false, accessible: true };
+    } catch {
+      const localFallback = this.getLocalFallback(rawPath);
+      return { path: localFallback, isLocal: true, accessible: true };
+    }
+  }
+}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Patterns Tab -->
+            <div class="tab-pane fade" id="patterns" role="tabpanel">
+                <div class="container py-5">
+                    <h2 class="section-title">
+                        <i class="bi bi-puzzle"></i> Enterprise Design Patterns
+                    </h2>
+
+                    <div class="row">
+                        <div class="col-lg-4">
+                            <div class="architecture-card">
+                                <div class="complexity-indicator enterprise">Enterprise</div>
+                                <div class="pattern-icon">
+                                    <i class="bi bi-layers"></i>
+                                </div>
+                                <h5>Compound Component Pattern</h5>
+                                <p class="text-secondary">Advanced component composition with Radix UI</p>
+                                <div class="highlight">
+                                    <strong>Implementation:</strong>
+                                    <ul class="mb-0">
+                                        <li>Dialog + Form composition</li>
+                                        <li>Table + Pagination + Filters</li>
+                                        <li>Multi-step wizard components</li>
+                                        <li>Accordion + Collapsible sections</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-4">
+                            <div class="architecture-card">
+                                <div class="complexity-indicator advanced">Advanced</div>
+                                <div class="pattern-icon">
+                                    <i class="bi bi-diagram-3"></i>
+                                </div>
+                                <h5>Server State Pattern</h5>
+                                <p class="text-secondary">React Query for server state synchronization</p>
+                                <div class="highlight">
+                                    <strong>Features:</strong>
+                                    <ul class="mb-0">
+                                        <li>Automatic background refetching</li>
+                                        <li>Optimistic updates</li>
+                                        <li>Request deduplication</li>
+                                        <li>Infinite query pagination</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-4">
+                            <div class="architecture-card">
+                                <div class="complexity-indicator enterprise">Enterprise</div>
+                                <div class="pattern-icon">
+                                    <i class="bi bi-memory"></i>
+                                </div>
+                                <h5>Multi-Layer Caching</h5>
+                                <p class="text-secondary">Intelligent caching across all architectural layers</p>
+                                <div class="highlight">
+                                    <strong>Layers:</strong>
+                                    <ul class="mb-0">
+                                        <li>React Query cache</li>
+                                        <li>Component memoization</li>
+                                        <li>Server-side request cache</li>
+                                        <li>Database query cache</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="architecture-card mt-4">
+                        <h5><i class="bi bi-shield-exclamation"></i> Enterprise Error Handling Strategy</h5>
+                        
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="code-snippet">
+// React Error Boundary with Recovery
+import { ErrorBoundary } from 'react-error-boundary';
+import { useQueryErrorResetBoundary } from '@tanstack/react-query';
+
+const AppErrorBoundary = ({ children }) =&gt; {
+  const { reset } = useQueryErrorResetBoundary();
+  
+  return (
+    &lt;ErrorBoundary
+      onReset={reset}
+      FallbackComponent={ErrorFallback}
+      onError={(error, errorInfo) =&gt; {
+        // Send to error tracking service
+        errorTracker.captureException(error, {
+          contexts: { react: errorInfo },
+          tags: { boundary: 'app' }
+        });
+      }}
+    &gt;
+      {children}
+    &lt;/ErrorBoundary&gt;
+  );
+};
+
+// Advanced error recovery
+const ErrorFallback = ({ error, resetErrorBoundary }) =&gt; (
+  &lt;div className="error-fallback"&gt;
+    &lt;h2&gt;Something went wrong&lt;/h2&gt;
+    &lt;details&gt;
+      &lt;summary&gt;Error details&lt;/summary&gt;
+      &lt;pre&gt;{error.message}&lt;/pre&gt;
+    &lt;/details&gt;
+    &lt;Button onClick={resetErrorBoundary}&gt;
+      Try again
+    &lt;/Button&gt;
+  &lt;/div&gt;
+);</div>
+                            </div>
+                            
+                            <div class="col-lg-6">
+                                <div class="code-snippet">
+// Global Error Handler with Context
+const useErrorHandler = () =&gt; {
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+  
+  return useCallback((error: Error, context?: string) =&gt; {
+    console.error(`Error in ${context}:`, error);
+    
+    // Handle different error types
+    if (error.name === 'ValidationError') {
+      toast.error('Please check your input and try again');
+    } else if (error.message.includes('network')) {
+      toast.error('Network error. Please check your connection');
+      // Retry queries after network recovery
+      queryClient.refetchQueries({ type: 'all' });
+    } else if (error.message.includes('401')) {
+      // Handle authentication error
+      authManager.logout();
+      router.navigate('/login');
+    } else {
+      toast.error('An unexpected error occurred');
+    }
+    
+    // Send to monitoring service
+    errorMonitor.captureException(error, {
+      context,
+      user: authManager.getCurrentUser(),
+      timestamp: new Date().toISOString()
+    });
+  }, [queryClient, toast]);
+};</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="architecture-card">
+                        <h5><i class="bi bi-speedometer2"></i> Performance Optimization Patterns</h5>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6>React Optimizations</h6>
+                                <ul>
+                                    <li><strong>React.memo:</strong> Component re-render prevention</li>
+                                    <li><strong>useMemo/useCallback:</strong> Expensive computation caching</li>
+                                    <li><strong>Code Splitting:</strong> React.lazy + Suspense</li>
+                                    <li><strong>Virtual Scrolling:</strong> Large list optimization</li>
+                                    <li><strong>Image Optimization:</strong> Lazy loading + WebP</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <h6>Query Optimizations</h6>
+                                <ul>
+                                    <li><strong>Query Deduplication:</strong> Prevent duplicate requests</li>
+                                    <li><strong>Parallel Queries:</strong> Multiple data fetching</li>
+                                    <li><strong>Prefetching:</strong> Anticipatory data loading</li>
+                                    <li><strong>Stale Time:</strong> Reduce unnecessary refetches</li>
+                                    <li><strong>Background Refetch:</strong> Keep data fresh</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="code-snippet">
+// Performance-Optimized Component
+import { memo, useMemo, useCallback, Suspense, lazy } from 'react';
+import { useVirtualizer } from '@tanstack/react-virtual';
+
+// Lazy load heavy components
+const DAGVisualization = lazy(() =&gt; import('./DAGVisualization'));
+
+const OptimizedDagList = memo(({ dags, filters, onDagSelect }) =&gt; {
+  // Memoize filtered results
+  const filteredDags = useMemo(() =&gt; {
+    return dags.filter(dag =&gt; {
+      return Object.entries(filters).every(([key, value]) =&gt; 
+        !value || dag[key]?.toString().includes(value)
+      );
+    });
+  }, [dags, filters]);
+  
+  // Virtualize large lists
+  const parentRef = useRef();
+  const virtualizer = useVirtualizer({
+    count: filteredDags.length,
+    getScrollElement: () =&gt; parentRef.current,
+    estimateSize: () =&gt; 120,
+    overscan: 5
+  });
+  
+  // Stable callback references
+  const handleDagClick = useCallback((dagId: string) =&gt; {
+    onDagSelect(dagId);
+  }, [onDagSelect]);
+  
+  return (
+    &lt;div ref={parentRef} className="virtual-container"&gt;
+      &lt;div style={{ height: `${virtualizer.getTotalSize()}px` }}&gt;
+        {virtualizer.getVirtualItems().map(virtualItem =&gt; (
+          &lt;div
+            key={virtualItem.index}
+            className="virtual-item"
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: `${virtualItem.size}px`,
+              transform: `translateY(${virtualItem.start}px)`
+            }}
+          &gt;
+            &lt;DagCard
+              dag={filteredDags[virtualItem.index]}
+              onClick={handleDagClick}
+            /&gt;
+          &lt;/div&gt;
+        ))}
+      &lt;/div&gt;
+    &lt;/div&gt;
+  );
+});
+
+// Suspense boundary for lazy components
+const DagVisualizationWithSuspense = ({ dagId }) =&gt; (
+  &lt;Suspense fallback={&lt;DagVisualizationSkeleton /&gt;}&gt;
+    &lt;DAGVisualization dagId={dagId} /&gt;
+  &lt;/Suspense&gt;
+);</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Implementation Tab -->
+            <div class="tab-pane fade" id="implementation" role="tabpanel">
+                <div class="container py-5">
+                    <h2 class="section-title">
+                        <i class="bi bi-code-slash"></i> Enterprise Implementation
+                    </h2>
+
+                    <div class="architecture-card">
+                        <h5><i class="bi bi-diagram-2-fill"></i> Advanced React Query Setup</h5>
+                        <p>Production-ready React Query configuration with advanced features</p>
+                        
+                        <div class="code-snippet">
+// Enterprise React Query Configuration
+import {
+  QueryClient,
+  QueryClientProvider,
+  MutationCache,
+  QueryCache
+} from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+
+// Advanced query client configuration
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      gcTime: 10 * 60 * 1000, // 10 minutes (formerly cacheTime)
+      retry: (failureCount, error) =&gt; {
+        // Don't retry on 4xx errors
+        if (error.status &gt;= 400 && error.status &lt; 500) return false;
+        return failureCount &lt; 3;
+      },
+      retryDelay: attemptIndex =&gt; Math.min(1000 * 2 ** attemptIndex, 30000),
+      refetchOnWindowFocus: true,
+      refetchOnReconnect: true
+    },
+    mutations: {
+      retry: 1,
+      onError: (error, variables, context) =&gt; {
+        console.error('Mutation error:', { error, variables, context });
+        errorTracker.captureException(error, {
+          extra: { variables, context }
+        });
+      }
+    }
+  },
+  queryCache: new QueryCache({
+    onError: (error, query) =&gt; {
+      console.error('Query error:', { error, queryKey: query.queryKey });
+      if (error.status === 401) {
+        authManager.logout();
+      }
+    }
+  }),
+  mutationCache: new MutationCache({
+    onSuccess: (data, variables, context) =&gt; {
+      // Global success handling
+      if (context?.showSuccessToast) {
+        toast.success('Operation completed successfully');
+      }
+    }
+  })
+});
+
+// Query client wrapper with error boundary
+export const QueryProvider = ({ children }) =&gt; (
+  &lt;QueryClientProvider client={queryClient}&gt;
+    &lt;ErrorBoundary
+      fallback={&lt;QueryErrorFallback /&gt;}
+      onError={(error) =&gt; {
+        console.error('React Query error:', error);
+        errorTracker.captureException(error, {
+          tags: { component: 'QueryProvider' }
+        });
+      }}
+    &gt;
+      {children}
+    &lt;/ErrorBoundary&gt;
+    {process.env.NODE_ENV === 'development' && (
+      &lt;ReactQueryDevtools initialIsOpen={false} /&gt;
+    )}
+  &lt;/QueryClientProvider&gt;
+);</div>
+                    </div>
+
+                    <div class="architecture-card">
+                        <h5><i class="bi bi-palette-fill"></i> Advanced Tailwind + Radix UI Integration</h5>
+                        <p>Scalable design system with custom theme configuration</p>
+                        
+                        <div class="code-snippet">
+// tailwind.config.ts - Advanced Configuration
+import type { Config } from "tailwindcss";
+
+export default {
+  darkMode: ["class"],
+  content: [
+    "./client/index.html",
+    "./client/src/**/*.{js,jsx,ts,tsx}",
+    "./node_modules/@radix-ui/**/*.{js,jsx}"
+  ],
+  theme: {
+    extend: {
+      // CSS Variables for dynamic theming
+      colors: {
+        border: "var(--border)",
+        input: "var(--input)",
+        ring: "var(--ring)",
+        background: "var(--background)",
+        foreground: "var(--foreground)",
+        primary: {
+          DEFAULT: "var(--primary)",
+          foreground: "var(--primary-foreground)",
+        },
+        secondary: {
+          DEFAULT: "var(--secondary)",
+          foreground: "var(--secondary-foreground)",
+        },
+        // Enterprise theme colors
+        brand: {
+          50: '#eff6ff',
+          500: '#3b82f6',
+          900: '#1e3a8a',
+        },
+        status: {
+          success: '#10b981',
+          warning: '#f59e0b',
+          error: '#ef4444',
+          info: '#3b82f6'
+        }
+      },
+      // Advanced animations
+      animation: {
+        "accordion-down": "accordion-down 0.2s ease-out",
+        "accordion-up": "accordion-up 0.2s ease-out",
+        "fade-in": "fadeIn 0.5s ease-in-out",
+        "slide-in": "slideIn 0.3s ease-out",
+        "pulse-slow": "pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite"
+      },
+      keyframes: {
+        fadeIn: {
+          '0%': { opacity: '0', transform: 'translateY(10px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' }
+        },
+        slideIn: {
+          '0%': { transform: 'translateX(-100%)' },
+          '100%': { transform: 'translateX(0)' }
+        }
+      },
+      // Custom spacing scale
+      spacing: {
+        '18': '4.5rem',
+        '88': '22rem'
+      }
+    },
+  },
+  plugins: [
+    require("tailwindcss-animate"),
+    require("@tailwindcss/typography"),
+    require("@tailwindcss/forms")
+  ],
+} satisfies Config;</div>
+                    </div>
+
+                    <div class="highlight">
+                        <h5><i class="bi bi-lightbulb"></i> Enterprise Best Practices Summary</h5>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6>Code Quality</h6>
+                                <ul>
+                                    <li>100% TypeScript with strict mode</li>
+                                    <li>ESLint + Prettier configuration</li>
+                                    <li>Husky pre-commit hooks</li>
+                                    <li>Comprehensive error boundaries</li>
+                                    <li>Unit and integration testing</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <h6>Performance & Scalability</h6>
+                                <ul>
+                                    <li>Code splitting with React.lazy</li>
+                                    <li>Virtual scrolling for large datasets</li>
+                                    <li>Optimized bundle size with tree shaking</li>
+                                    <li>CDN integration for static assets</li>
+                                    <li>Progressive Web App capabilities</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="bg-dark text-light py-5 mt-5">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6><i class="bi bi-info-circle"></i> Enterprise Architecture Summary</h6>
+                        <p class="mb-3">This presentation demonstrates a sophisticated enterprise-grade React application architecture with Apache Airflow integration. The system leverages modern technologies including React Query for server state management, Radix UI for accessible components, Drizzle ORM for type-safe database operations, and comprehensive error handling strategies.</p>
+                        <p class="mb-0"><strong>Key Achievement:</strong> 95%+ TypeScript coverage with enterprise-level scalability and maintainability.</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6><i class="bi bi-gear"></i> Complete Technology Stack</h6>
+                        <div class="row">
+                            <div class="col-6">
+                                <small class="text-muted d-block mb-2"><strong>Frontend:</strong></small>
+                                <small class="text-muted">
+                                    React 18 • TypeScript 5.6<br>
+                                    Radix UI • Tailwind CSS<br>
+                                    React Query • Framer Motion
+                                </small>
+                            </div>
+                            <div class="col-6">
+                                <small class="text-muted d-block mb-2"><strong>Backend:</strong></small>
+                                <small class="text-muted">
+                                    Express.js • Drizzle ORM<br>
+                                    PostgreSQL • Passport.js<br>
+                                    Apache Airflow 3.x
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr class="my-4">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <small class="text-muted">© 2024 Enterprise Frontend Architecture Documentation</small>
+                    </div>
+                    <div class="col-md-6 text-md-end">
+                        <small class="text-muted">Built with Bootstrap 5, optimized for modern browsers</small>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Enhanced tab navigation with analytics
+        document.querySelectorAll('[data-bs-toggle="pill"]').forEach(tab => {
+            tab.addEventListener('shown.bs.tab', event => {
+                const targetId = event.target.getAttribute('data-bs-target');
+                console.log('Architecture tab changed to:', targetId);
+                
+                // Optional: Track usage analytics
+                if (typeof gtag !== 'undefined') {
+                    gtag('event', 'tab_view', {
+                        'event_category': 'architecture_presentation',
+                        'event_label': targetId
+                    });
+                }
+            });
+        });
+
+        // Enhanced copy code functionality with feedback
+        document.querySelectorAll('.code-snippet').forEach(codeBlock => {
+            codeBlock.style.cursor = 'pointer';
+            codeBlock.title = 'Click to copy code';
+            
+            codeBlock.addEventListener('click', async () => {
+                try {
+                    const text = codeBlock.textContent;
+                    await navigator.clipboard.writeText(text);
+                    
+                    // Enhanced visual feedback
+                    const originalBg = codeBlock.style.backgroundColor;
+                    codeBlock.style.backgroundColor = '#10b981';
+                    codeBlock.style.transform = 'scale(1.02)';
+                    
+                    // Show toast notification
+                    showToast('Code copied to clipboard!', 'success');
+                    
+                    setTimeout(() => {
+                        codeBlock.style.backgroundColor = originalBg;
+                        codeBlock.style.transform = 'scale(1)';
+                    }, 300);
+                } catch (err) {
+                    showToast('Failed to copy code', 'error');
+                }
+            });
+        });
+
+        // Enhanced hover effects for architecture cards
+        document.querySelectorAll('.architecture-card').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transition = 'all 0.3s ease';
+                card.style.transform = 'translateY(-8px)';
+                card.style.boxShadow = '0 25px 25px -5px rgba(0, 0, 0, 0.1)';
+            });
+            
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateY(0)';
+                card.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1)';
+            });
+        });
+
+        // Toast notification system
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = `alert alert-${type === 'success' ? 'success' : 'danger'} position-fixed`;
+            toast.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 250px;';
+            toast.textContent = message;
+            
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => document.body.removeChild(toast), 300);
+            }, 2000);
+        }
+
+        // Advanced keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            const tabs = Array.from(document.querySelectorAll('[data-bs-toggle="pill"]'));
+            const activeTab = document.querySelector('[data-bs-toggle="pill"].active');
+            const currentIndex = tabs.indexOf(activeTab);
+            
+            if (e.ctrlKey || e.metaKey) {
+                switch(e.key) {
+                    case 'ArrowRight':
+                        if (currentIndex < tabs.length - 1) {
+                            tabs[currentIndex + 1].click();
+                            e.preventDefault();
+                        }
+                        break;
+                    case 'ArrowLeft':
+                        if (currentIndex > 0) {
+                            tabs[currentIndex - 1].click();
+                            e.preventDefault();
+                        }
+                        break;
+                    case '1':
+                    case '2':
+                    case '3':
+                    case '4':
+                    case '5':
+                    case '6':
+                        const tabIndex = parseInt(e.key) - 1;
+                        if (tabs[tabIndex]) {
+                            tabs[tabIndex].click();
+                            e.preventDefault();
+                        }
+                        break;
+                }
+            }
+        });
+
+        // Smooth scroll enhancement
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Initialize tooltips for complexity indicators (with Bootstrap check)
+        function initializeTooltips() {
+            if (typeof bootstrap !== 'undefined' && bootstrap.Tooltip) {
+                const tooltipTriggerList = [].slice.call(document.querySelectorAll('[title]'));
+                const tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                    return new bootstrap.Tooltip(tooltipTriggerEl);
+                });
+                console.log('✨ Bootstrap tooltips initialized');
+            } else {
+                console.log('ℹ️ Bootstrap not available, skipping tooltip initialization');
+            }
+        }
+
+        // Wait for DOM and Bootstrap to be ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                setTimeout(initializeTooltips, 100);
+            });
+        } else {
+            setTimeout(initializeTooltips, 100);
+        }
+
+        console.log('🚀 Enterprise Architecture Presentation loaded successfully!');
+        console.log('📊 Features: Advanced patterns, TypeScript, React Query, Radix UI, and more');
+    </script>
+</body>
+</html>
