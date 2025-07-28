@@ -1,0 +1,1629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InfoArchive Data Transformer - Complete Navigation Guide</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #64748b;
+            --success-color: #22c55e;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --info-color: #3b82f6;
+            --dark-color: #1e293b;
+            --light-bg: #f8fafc;
+            --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 25px rgba(0,0,0,0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            color: #334155;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .main-container {
+            background: white;
+            min-height: 100vh;
+        }
+
+        /* Header Styles */
+        .hero-header {
+            background: var(--gradient-primary);
+            color: white;
+            padding: 4rem 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><polygon fill="rgba(255,255,255,0.1)" points="0,1000 1000,0 1000,1000"/></svg>');
+            background-size: cover;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+            font-weight: 300;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+        }
+
+        .hero-badges {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .hero-badge {
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        /* Navigation Styles */
+        .sticky-nav {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid #e2e8f0;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .nav-link {
+            color: #64748b !important;
+            font-weight: 500;
+            padding: 1rem 1.5rem !important;
+            transition: all 0.3s ease;
+            border-radius: 8px;
+            margin: 0 0.25rem;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--primary-color) !important;
+            background: #eff6ff;
+            transform: translateY(-1px);
+        }
+
+        /* Card Styles */
+        .modern-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: var(--shadow-md);
+            border: none;
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .modern-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .card-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--gradient-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Step Cards */
+        .step-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-md);
+            border-left: 5px solid var(--primary-color);
+            transition: all 0.3s ease;
+        }
+
+        .step-card:hover {
+            transform: translateX(5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .step-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .step-number {
+            width: 50px;
+            height: 50px;
+            background: var(--gradient-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 1.25rem;
+            margin-right: 1rem;
+            box-shadow: var(--shadow-md);
+        }
+
+        .step-title {
+            color: var(--dark-color);
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        /* Alert Boxes */
+        .alert-modern {
+            border: none;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .alert-success {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            color: #065f46;
+            border-left: 4px solid var(--success-color);
+        }
+
+        .alert-warning {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            color: #92400e;
+            border-left: 4px solid var(--warning-color);
+        }
+
+        .alert-info {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            color: #1e40af;
+            border-left: 4px solid var(--info-color);
+        }
+
+        .alert-danger {
+            background: linear-gradient(135deg, #fecaca 0%, #fca5a5 100%);
+            color: #991b1b;
+            border-left: 4px solid var(--danger-color);
+        }
+
+        /* Feature Grid */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: var(--shadow-md);
+            transition: all 0.3s ease;
+            border-top: 4px solid var(--primary-color);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .feature-card h4 {
+            color: var(--dark-color);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Navigation Path */
+        .nav-path {
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.9rem;
+            color: #475569;
+        }
+
+        /* Workflow Diagram */
+        .workflow-diagram {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            margin: 2rem 0;
+            box-shadow: var(--shadow-md);
+            text-align: center;
+        }
+
+        .workflow-steps {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .workflow-step {
+            background: var(--gradient-primary);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 25px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s ease;
+        }
+
+        .workflow-step:hover {
+            transform: scale(1.05);
+        }
+
+        .workflow-arrow {
+            color: var(--secondary-color);
+            font-size: 1.5rem;
+        }
+
+        /* Checklist */
+        .checklist {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .checklist ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .checklist li {
+            padding: 0.5rem 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .checklist li::before {
+            content: '\f00c';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            color: var(--success-color);
+            margin-right: 1rem;
+        }
+
+        /* Table of Contents */
+        .toc-card {
+            background: var(--light-bg);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 3rem;
+            box-shadow: var(--shadow-md);
+        }
+
+        .toc-list {
+            columns: 2;
+            column-gap: 2rem;
+            list-style: none;
+            padding: 0;
+        }
+
+        .toc-list li {
+            margin-bottom: 0.75rem;
+            break-inside: avoid;
+        }
+
+        .toc-list a {
+            text-decoration: none;
+            color: var(--primary-color);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .toc-list a:hover {
+            background: #eff6ff;
+            transform: translateX(5px);
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--dark-color);
+            color: white;
+            padding: 3rem 0;
+            margin-top: 4rem;
+            text-align: center;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .toc-list {
+                columns: 1;
+            }
+            
+            .workflow-steps {
+                flex-direction: column;
+            }
+            
+            .workflow-arrow {
+                transform: rotate(90deg);
+            }
+            
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Animation classes */
+        .fade-in {
+            animation: fadeIn 0.6s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Scroll behavior */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Modern scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #1d4ed8;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <!-- Hero Header -->
+        <header class="hero-header">
+            <div class="container">
+                <div class="hero-content fade-in">
+                    <h1 class="hero-title">
+                        <i class="fas fa-database me-3"></i>
+                        InfoArchive Data Transformer
+                    </h1>
+                    <p class="hero-subtitle">Complete Navigation Guide for New Users</p>
+                    <div class="hero-badges">
+                        <span class="hero-badge">
+                            <i class="fas fa-cogs me-2"></i>Enterprise Data Processing
+                        </span>
+                        <span class="hero-badge">
+                            <i class="fab fa-python me-2"></i>Apache Airflow Integration
+                        </span>
+                        <span class="hero-badge">
+                            <i class="fas fa-chart-line me-2"></i>Real-time Analytics
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Sticky Navigation -->
+        <nav class="navbar navbar-expand-lg sticky-nav">
+            <div class="container">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav mx-auto">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#overview">
+                                <i class="fas fa-eye me-2"></i>Overview
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#getting-started">
+                                <i class="fas fa-rocket me-2"></i>Getting Started
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#workflows">
+                                <i class="fas fa-tasks me-2"></i>Workflows
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#dashboard">
+                                <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#troubleshooting">
+                                <i class="fas fa-tools me-2"></i>Support
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <div class="container my-5">
+            <!-- Table of Contents -->
+            <div class="toc-card fade-in">
+                <h2 class="h3 mb-4">
+                    <i class="fas fa-book-open text-primary me-3"></i>Table of Contents
+                </h2>
+                <ol class="toc-list">
+                    <li><a href="#overview"><i class="fas fa-eye"></i>Application Overview</a></li>
+                    <li><a href="#getting-started"><i class="fas fa-rocket"></i>Getting Started</a></li>
+                    <li><a href="#navigation"><i class="fas fa-compass"></i>Main Navigation Areas</a></li>
+                    <li><a href="#workflows"><i class="fas fa-tasks"></i>Step-by-Step Workflows</a></li>
+                    <li><a href="#dashboard"><i class="fas fa-tachometer-alt"></i>Dashboard & Monitoring</a></li>
+                    <li><a href="#reports"><i class="fas fa-chart-bar"></i>Reports & Analytics</a></li>
+                    <li><a href="#troubleshooting"><i class="fas fa-tools"></i>Troubleshooting Guide</a></li>
+                    <li><a href="#advanced"><i class="fas fa-cog"></i>Advanced Features</a></li>
+                    <li><a href="#reference"><i class="fas fa-bookmark"></i>Quick Reference</a></li>
+                    <li><a href="#support"><i class="fas fa-life-ring"></i>Support & Resources</a></li>
+                </ol>
+            </div>
+
+            <!-- Application Overview -->
+            <section id="overview" class="fade-in">
+                <div class="d-flex align-items-center mb-4">
+                    <div class="card-icon me-3">
+                        <i class="fas fa-bullseye"></i>
+                    </div>
+                    <h2 class="h1 mb-0">Application Overview</h2>
+                </div>
+                
+                <p class="lead mb-4">
+                    The <strong>InfoArchive Data Transformer</strong> is a sophisticated enterprise application designed to automate the complex process of transforming CSV data into InfoArchive-compatible XML format. It seamlessly integrates with Apache Airflow 3.x for robust workflow orchestration and provides an intuitive web interface for managing data transformation pipelines.
+                </p>
+                
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <h4><i class="fas fa-upload text-primary"></i> CSV Upload & Validation</h4>
+                        <p>Intelligent file processing with automatic structure analysis and comprehensive validation.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4><i class="fas fa-cogs text-success"></i> Schema Generation</h4>
+                        <p>Automatic InfoArchive-compatible schema creation with intelligent field mapping.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4><i class="fas fa-chart-line text-info"></i> Visual Monitoring</h4>
+                        <p>Real-time workflow tracking and analytics with interactive dashboards.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4><i class="fas fa-chart-bar text-warning"></i> Enterprise Reporting</h4>
+                        <p>Comprehensive audit trails and performance metrics with export capabilities.</p>
+                    </div>
+                </div>
+                
+                <div class="workflow-diagram">
+                    <h3 class="h4 mb-4">
+                        <i class="fas fa-sitemap text-primary me-2"></i>Complete Workflow Overview
+                    </h3>
+                    <div class="workflow-steps">
+                        <div class="workflow-step">Upload CSV</div>
+                        <i class="fas fa-arrow-right workflow-arrow"></i>
+                        <div class="workflow-step">Generate Schema</div>
+                        <i class="fas fa-arrow-right workflow-arrow"></i>
+                        <div class="workflow-step">Validate & Edit</div>
+                        <i class="fas fa-arrow-right workflow-arrow"></i>
+                        <div class="workflow-step">Download Schema</div>
+                        <i class="fas fa-arrow-right workflow-arrow"></i>
+                        <div class="workflow-step">Transform Data</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Getting Started -->
+            <section id="getting-started" class="fade-in mt-5">
+                <div class="d-flex align-items-center mb-4">
+                    <div class="card-icon me-3">
+                        <i class="fas fa-rocket"></i>
+                    </div>
+                    <h2 class="h1 mb-0">Getting Started</h2>
+                </div>
+                
+                <div class="row">
+                    <div class="col-lg-8">
+                        <h3 class="h4 mb-3">
+                            <i class="fas fa-globe text-primary me-2"></i>Initial Access
+                        </h3>
+                        <div class="modern-card p-4 mb-4">
+                            <ol class="mb-0">
+                                <li class="mb-2"><strong>Open your web browser</strong> (Chrome, Firefox, Edge, or Safari)</li>
+                                <li class="mb-2"><strong>Navigate to:</strong> <code class="bg-light p-1 rounded">http://localhost:3002</code></li>
+                                <li><strong>Verify connection status</strong> in the top-right corner</li>
+                            </ol>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="alert alert-info alert-modern">
+                            <h5><i class="fas fa-lightbulb me-2"></i>First-Time Setup</h5>
+                            <ul class="mb-0">
+                                <li>Auto-detects deployment mode</li>
+                                <li>Airflow: <code>localhost:8083</code></li>
+                                <li>Default: admin/admin123</li>
+                                <li>Check directory permissions</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 class="h4 mb-3">
+                    <i class="fas fa-search text-primary me-2"></i>Connection Status Indicators
+                </h3>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="feature-card text-center">
+                            <i class="fas fa-circle text-success fa-2x mb-3"></i>
+                            <h4>Connected</h4>
+                            <p>Full functionality available. Airflow running at localhost:8083</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="feature-card text-center">
+                            <i class="fas fa-circle text-danger fa-2x mb-3"></i>
+                            <h4>Disconnected</h4>
+                            <p>Limited functionality. Check Airflow server and network connectivity</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="feature-card text-center">
+                            <i class="fas fa-circle text-warning fa-2x mb-3"></i>
+                            <h4>Checking</h4>
+                            <p>Connection test in progress. Please wait for status update</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Main Navigation -->
+            <section id="navigation" class="fade-in mt-5">
+                <div class="d-flex align-items-center mb-4">
+                    <div class="card-icon me-3">
+                        <i class="fas fa-compass"></i>
+                    </div>
+                    <h2 class="h1 mb-0">Main Navigation Areas</h2>
+                </div>
+                
+                <p class="lead mb-4">
+                    The application is organized into <strong>two primary sections</strong> accessible via the collapsible left sidebar:
+                </p>
+                
+                <h3 class="h4 mb-3">
+                    <i class="fas fa-chart-line text-primary me-2"></i>Management Console
+                </h3>
+                <div class="alert alert-info alert-modern">
+                    <strong>Purpose:</strong> Monitor, analyze, and manage your data transformation workflows and system performance.
+                </div>
+                
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <h4><i class="fas fa-home text-primary"></i> Dashboard</h4>
+                        <p><strong>Real-time overview</strong> of all DAGs, workflows, and system status with key performance metrics.</p>
+                        <div class="nav-path">
+                            <i class="fas fa-route me-2"></i>Sidebar → Management Console → Dashboard
+                        </div>
+                    </div>
+                    <div class="feature-card">
+                        <h4><i class="fas fa-bolt text-warning"></i> Jobs</h4>
+                        <p><strong>Active workflow monitoring</strong> with real-time job status, execution progress, and performance tracking.</p>
+                        <div class="nav-path">
+                            <i class="fas fa-route me-2"></i>Sidebar → Management Console → Jobs
+                        </div>
+                    </div>
+                    <div class="feature-card">
+                        <h4><i class="fas fa-chart-bar text-info"></i> Metrics</h4>
+                        <p><strong>Performance analytics</strong> including execution times, success rates, and resource utilization trends.</p>
+                        <div class="nav-path">
+                            <i class="fas fa-route me-2"></i>Sidebar → Management Console → Metrics
+                        </div>
+                    </div>
+                    <div class="feature-card">
+                        <h4><i class="fas fa-file-alt text-success"></i> Reports</h4>
+                        <p><strong>Comprehensive reporting</strong> with charts, tables, metrics, and audit trails for complete visibility.</p>
+                        <div class="nav-path">
+                            <i class="fas fa-route me-2"></i>Sidebar → Management Console → Reports
+                        </div>
+                    </div>
+                </div>
+                
+                <h3 class="h4 mb-3 mt-4">
+                    <i class="fas fa-folder-open text-primary me-2"></i>Structured Data Archival
+                </h3>
+                <div class="alert alert-info alert-modern">
+                    <strong>Purpose:</strong> Step-by-step guided workflow for processing CSV files into InfoArchive-compatible format.
+                </div>
+                
+                <div class="workflow-diagram">
+                    <h4 class="h5">
+                        <i class="fas fa-list-ol text-primary me-2"></i>Sequential Workflow Steps
+                    </h4>
+                    <div class="text-start mt-3">
+                        <div class="mb-3 d-flex align-items-center">
+                            <span class="badge bg-primary rounded-pill me-3">1</span>
+                            <strong>Prerequisites & Source Data Upload</strong>
+                            <i class="fas fa-upload ms-2 text-primary"></i>
+                        </div>
+                        <div class="mb-3 d-flex align-items-center">
+                            <span class="badge bg-primary rounded-pill me-3">2</span>
+                            <strong>Generate Table Schema in InfoArchive</strong>
+                            <i class="fas fa-cogs ms-2 text-primary"></i>
+                        </div>
+                        <div class="mb-3 d-flex align-items-center">
+                            <span class="badge bg-primary rounded-pill me-3">3</span>
+                            <strong>Validate and Finalize Schema</strong>
+                            <i class="fas fa-check-circle ms-2 text-primary"></i>
+                        </div>
+                        <div class="mb-3 d-flex align-items-center">
+                            <span class="badge bg-primary rounded-pill me-3">4</span>
+                            <strong>Download IA Schema</strong>
+                            <i class="fas fa-download ms-2 text-primary"></i>
+                        </div>
+                        <div class="mb-3 d-flex align-items-center">
+                            <span class="badge bg-primary rounded-pill me-3">5</span>
+                            <strong>Transform CSV Data to IA XML Format</strong>
+                            <i class="fas fa-sync-alt ms-2 text-primary"></i>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Detailed Workflows -->
+            <section id="workflows" class="fade-in mt-5">
+                <div class="d-flex align-items-center mb-4">
+                    <div class="card-icon me-3">
+                        <i class="fas fa-tasks"></i>
+                    </div>
+                    <h2 class="h1 mb-0">Detailed Step-by-Step Workflows</h2>
+                </div>
+                
+                <!-- Step 1 -->
+                <div class="step-card">
+                    <div class="step-header">
+                        <div class="step-number">1</div>
+                        <h3 class="step-title">Prerequisites & Source Data Upload</h3>
+                    </div>
+                    
+                    <div class="alert alert-success alert-modern">
+                        <strong><i class="fas fa-bullseye me-2"></i>Goal:</strong> Upload and validate your CSV files for processing
+                    </div>
+                    
+                    <div class="nav-path">
+                        <strong><i class="fas fa-route me-2"></i>Navigation:</strong> Sidebar → Structured Data Archival → Prerequisites & Source Data Upload
+                    </div>
+                    
+                    <h4 class="h5 mt-4">
+                        <i class="fas fa-eye text-primary me-2"></i>What You'll See:
+                    </h4>
+                    <ul>
+                        <li>Clean, intuitive file upload interface</li>
+                        <li>Drag-and-drop area for CSV files</li>
+                        <li>Real-time file validation messages</li>
+                        <li>Interactive preview of uploaded data with headers and sample rows</li>
+                        <li>File size and format validation indicators</li>
+                    </ul>
+                    
+                    <div class="modern-card p-4 mt-3">
+                        <h4 class="h5">
+                            <i class="fas fa-clipboard-list text-primary me-2"></i>Actions to Take:
+                        </h4>
+                        <ol>
+                            <li><strong>Click "Choose File"</strong> or drag your CSV file directly to the upload area</li>
+                            <li><strong>Wait for automatic validation</strong> - the system will analyze file structure and content</li>
+                            <li><strong>Review the data preview</strong> - verify headers are correct and sample data looks accurate</li>
+                            <li><strong>Check validation messages</strong> - ensure no errors are reported</li>
+                            <li><strong>Click "Continue"</strong> to proceed to schema configuration</li>
+                        </ol>
+                    </div>
+                    
+                    <div class="alert alert-success alert-modern mt-3">
+                        <h4 class="h5">
+                            <i class="fas fa-check-circle me-2"></i>Success Indicators:
+                        </h4>
+                        <div class="checklist">
+                            <ul>
+                                <li>File successfully uploaded without errors</li>
+                                <li>CSV headers detected and properly displayed</li>
+                                <li>Sample data rows shown in organized preview table</li>
+                                <li>File size and format validation passed</li>
+                                <li>"Continue" button becomes active and clickable</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Step 2 -->
+                <div class="step-card">
+                    <div class="step-header">
+                        <div class="step-number">2</div>
+                        <h3 class="step-title">Generate Table Schema in InfoArchive</h3>
+                    </div>
+                    
+                    <div class="alert alert-success alert-modern">
+                        <strong><i class="fas fa-bullseye me-2"></i>Goal:</strong> Create InfoArchive-compatible schema from your CSV structure
+                    </div>
+                    
+                    <div class="nav-path">
+                        <strong><i class="fas fa-route me-2"></i>Navigation:</strong> Automatically advances from Step 1, or manually via sidebar menu
+                    </div>
+                    
+                    <h4 class="h5 mt-4">
+                        <i class="fas fa-eye text-primary me-2"></i>What You'll See:
+                    </h4>
+                    <ul>
+                        <li>Comprehensive schema generation interface</li>
+                        <li>Field mapping table with source-to-target assignments</li>
+                        <li>Automatic data type detection and assignment</li>
+                        <li>InfoArchive compatibility validation checks</li>
+                        <li>Preview of generated schema structure</li>
+                    </ul>
+                    
+                    <div class="modern-card p-4 mt-3">
+                        <h4 class="h5">
+                            <i class="fas fa-clipboard-list text-primary me-2"></i>Actions to Take:
+                        </h4>
+                        <ol>
+                            <li><strong>Review auto-detected fields</strong> from your uploaded CSV file</li>
+                            <li><strong>Verify field mappings</strong> - ensure each CSV column maps correctly</li>
+                            <li><strong>Check data type assignments</strong> - confirm automatic type detection is accurate</li>
+                            <li><strong>Click "Analyze"</strong> to generate the complete InfoArchive schema</li>
+                            <li><strong>Wait for processing</strong> - DAG 'IA_CSV_Metadata_Generator' will be triggered automatically</li>
+                            <li><strong>Verify success notification</strong> confirming schema generation completion</li>
+                        </ol>
+                    </div>
+                    
+                    <div class="alert alert-success alert-modern mt-3">
+                        <h4 class="h5">
+                            <i class="fas fa-check-circle me-2"></i>Success Indicators:
+                        </h4>
+                        <div class="checklist">
+                            <ul>
+                                <li>DAG 'IA_CSV_Metadata_Generator' triggered successfully</li>
+                                <li>All schema fields mapped correctly with proper naming</li>
+                                <li>Data types assigned appropriately for InfoArchive compatibility</li>
+                                <li>No validation errors or compatibility warnings</li>
+                                <li>Success toast notification appears confirming completion</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="step-card">
+                    <div class="step-header">
+                        <div class="step-number">3</div>
+                        <h3 class="step-title">Validate and Finalize Schema</h3>
+                    </div>
+                    
+                    <div class="alert alert-success alert-modern">
+                        <strong><i class="fas fa-bullseye me-2"></i>Goal:</strong> Review, edit, and finalize the generated schema with custom adjustments
+                    </div>
+                    
+                    <div class="nav-path">
+                        <strong><i class="fas fa-route me-2"></i>Navigation:</strong> Automatically advances from Step 2 upon successful schema generation
+                    </div>
+                    
+                    <h4 class="h5 mt-4">
+                        <i class="fas fa-eye text-primary me-2"></i>What You'll See:
+                    </h4>
+                    <ul>
+                        <li>Interactive, editable schema interface</li>
+                        <li>Field-by-field configuration options</li>
+                        <li>Dropdown selectors for data types</li>
+                        <li>Validation rules and constraints setup</li>
+                        <li>Real-time schema preview and validation</li>
+                    </ul>
+                    
+                    <div class="modern-card p-4 mt-3">
+                        <h4 class="h5">
+                            <i class="fas fa-clipboard-list text-primary me-2"></i>Actions to Take:
+                        </h4>
+                        <ol>
+                            <li><strong>Review each field</strong> in the generated schema carefully</li>
+                            <li><strong>Edit field properties</strong> as needed:
+                                <ul class="mt-2">
+                                    <li>Field names and display labels</li>
+                                    <li>Data types (String, Integer, Date, etc.)</li>
+                                    <li>Length constraints and precision</li>
+                                    <li>Required/optional field settings</li>
+                                    <li>Default values where applicable</li>
+                                </ul>
+                            </li>
+                            <li><strong>Add validation rules</strong> if required for data quality</li>
+                            <li><strong>Test the schema</strong> using the preview functionality</li>
+                            <li><strong>Click "Finalize"</strong> when satisfied with all schema configurations</li>
+                        </ol>
+                    </div>
+                    
+                    <div class="alert alert-success alert-modern mt-3">
+                        <h4 class="h5">
+                            <i class="fas fa-check-circle me-2"></i>Success Indicators:
+                        </h4>
+                        <div class="checklist">
+                            <ul>
+                                <li>All fields properly configured with appropriate data types</li>
+                                <li>No validation errors or schema inconsistencies</li>
+                                <li>Schema validation passes all InfoArchive compatibility checks</li>
+                                <li>Required fields and constraints properly defined</li>
+                                <li>Schema marked as finalized with confirmation notification</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 4 -->
+                <div class="step-card">
+                    <div class="step-header">
+                        <div class="step-number">4</div>
+                        <h3 class="step-title">Download IA Schema</h3>
+                    </div>
+                    
+                    <div class="alert alert-success alert-modern">
+                        <strong><i class="fas fa-bullseye me-2"></i>Goal:</strong> Download the completed InfoArchive schema and prepare for deployment
+                    </div>
+                    
+                    <div class="nav-path">
+                        <strong><i class="fas fa-route me-2"></i>Navigation:</strong> Automatically advances from Step 3 upon successful schema finalization
+                    </div>
+                    
+                    <h4 class="h5 mt-4">
+                        <i class="fas fa-eye text-primary me-2"></i>What You'll See:
+                    </h4>
+                    <ul>
+                        <li>Comprehensive download interface</li>
+                        <li>Detailed schema summary with all configurations</li>
+                        <li>Generated XML file preview</li>
+                        <li>Step-by-step deployment instructions</li>
+                        <li>Integration guidelines for InfoArchive</li>
+                    </ul>
+                    
+                    <div class="modern-card p-4 mt-3">
+                        <h4 class="h5">
+                            <i class="fas fa-clipboard-list text-primary me-2"></i>Actions to Take:
+                        </h4>
+                        <ol>
+                            <li><strong>Review the complete schema summary</strong> - verify all configurations are correct</li>
+                            <li><strong>Preview the XML structure</strong> - ensure the generated format meets requirements</li>
+                            <li><strong>Click "Download Schema"</strong> to save the XML file to your local system</li>
+                            <li><strong>Read deployment instructions</strong> - understand integration requirements</li>
+                            <li><strong>Save the file</strong> in an appropriate location for InfoArchive deployment</li>
+                            <li><strong>Proceed to data transformation</strong> when ready to process actual data</li>
+                        </ol>
+                    </div>
+                    
+                    <div class="alert alert-success alert-modern mt-3">
+                        <h4 class="h5">
+                            <i class="fas fa-check-circle me-2"></i>Success Indicators:
+                        </h4>
+                        <div class="checklist">
+                            <ul>
+                                <li>Schema XML file successfully downloaded</li>
+                                <li>File contains valid InfoArchive-compatible XML structure</li>
+                                <li>All field definitions and constraints properly included</li>
+                                <li>Deployment instructions clearly understood</li>
+                                <li>Ready to proceed to data transformation phase</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 5 -->
+                <div class="step-card">
+                    <div class="step-header">
+                        <div class="step-number">5</div>
+                        <h3 class="step-title">Transform CSV Data to IA XML Format</h3>
+                    </div>
+                    
+                    <div class="alert alert-success alert-modern">
+                        <strong><i class="fas fa-bullseye me-2"></i>Goal:</strong> Transform your actual CSV data using the finalized schema and upload to InfoArchive
+                    </div>
+                    
+                    <div class="nav-path">
+                        <strong><i class="fas fa-route me-2"></i>Navigation:</strong> Automatically advances from Step 4, or accessible via sidebar menu
+                    </div>
+                    
+                    <h4 class="h5 mt-4">
+                        <i class="fas fa-eye text-primary me-2"></i>What You'll See:
+                    </h4>
+                    <ul>
+                        <li>Advanced data transformation interface</li>
+                        <li>Real-time progress indicators and status updates</li>
+                        <li>Configurable transformation settings</li>
+                        <li>Direct upload options to InfoArchive system</li>
+                        <li>Error handling and retry mechanisms</li>
+                    </ul>
+                    
+                    <div class="modern-card p-4 mt-3">
+                        <h4 class="h5">
+                            <i class="fas fa-clipboard-list text-primary me-2"></i>Actions to Take:
+                        </h4>
+                        <ol>
+                            <li><strong>Configure transformation settings</strong>:
+                                <ul class="mt-2">
+                                    <li>Batch size for processing large files</li>
+                                    <li>Error handling preferences</li>
+                                    <li>Output format specifications</li>
+                                </ul>
+                            </li>
+                            <li><strong>Click "Start Transformation"</strong> to begin the data processing</li>
+                            <li><strong>Monitor progress</strong> in real-time using the progress indicators</li>
+                            <li><strong>Review transformation results</strong> and handle any data quality issues</li>
+                            <li><strong>Validate output format</strong> before uploading to InfoArchive</li>
+                            <li><strong>Click "Upload to InfoArchive"</strong> when transformation completes successfully</li>
+                        </ol>
+                    </div>
+                    
+                    <div class="alert alert-success alert-modern mt-3">
+                        <h4 class="h5">
+                            <i class="fas fa-check-circle me-2"></i>Success Indicators:
+                        </h4>
+                        <div class="checklist">
+                            <ul>
+                                <li>Data transformation completed without errors</li>
+                                <li>All CSV records successfully converted to XML format</li>
+                                <li>Output validates against the finalized schema</li>
+                                <li>No data quality issues or validation errors</li>
+                                <li>Data successfully uploaded to InfoArchive system</li>
+                                <li>Completion notification with summary statistics</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Dashboard Section -->
+            <section id="dashboard" class="fade-in mt-5">
+                <div class="d-flex align-items-center mb-4">
+                    <div class="card-icon me-3">
+                        <i class="fas fa-tachometer-alt"></i>
+                    </div>
+                    <h2 class="h1 mb-0">Dashboard & Monitoring</h2>
+                </div>
+                
+                <h3 class="h4 mb-3">
+                    <i class="fas fa-home text-primary me-2"></i>Main Dashboard
+                </h3>
+                <div class="nav-path mb-4">
+                    <strong><i class="fas fa-route me-2"></i>Access:</strong> Sidebar → Management Console → Dashboard
+                </div>
+                
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <h4><i class="fas fa-chart-line text-primary"></i> DAG Overview</h4>
+                        <ul>
+                            <li><strong>Total DAGs:</strong> Complete count of all workflows</li>
+                            <li><strong>Active DAGs:</strong> Currently running processes</li>
+                            <li><strong>Paused DAGs:</strong> Temporarily stopped workflows</li>
+                            <li><strong>Success Rate:</strong> Overall execution success percentage</li>
+                        </ul>
+                    </div>
+                    <div class="feature-card">
+                        <h4><i class="fas fa-clock text-info"></i> Recent Activity</h4>
+                        <ul>
+                            <li>Latest DAG executions with timestamps</li>
+                            <li>Recent file uploads and transformations</li>
+                            <li>System alerts and notifications</li>
+                            <li>User activity logs</li>
+                        </ul>
+                    </div>
+                    <div class="feature-card">
+                        <h4><i class="fas fa-bolt text-warning"></i> Quick Actions</h4>
+                        <ul>
+                            <li>Start new transformation workflow</li>
+                            <li>View detailed reports and analytics</li>
+                            <li>Access system settings and configuration</li>
+                            <li>Check connection status and health</li>
+                        </ul>
+                    </div>
+                    <div class="feature-card">
+                        <h4><i class="fas fa-chart-bar text-success"></i> Performance Metrics</h4>
+                        <ul>
+                            <li>Average execution time trends</li>
+                            <li>Data processing volume statistics</li>
+                            <li>System resource usage indicators</li>
+                            <li>Error rates and reliability metrics</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <h3 class="h4 mb-3 mt-4">
+                    <i class="fas fa-tasks text-primary me-2"></i>Jobs Monitoring
+                </h3>
+                <div class="nav-path mb-4">
+                    <strong><i class="fas fa-route me-2"></i>Access:</strong> Sidebar → Management Console → Jobs
+                </div>
+                
+                <div class="alert alert-info alert-modern">
+                    <h4 class="h5">
+                        <i class="fas fa-search me-2"></i>Key Features:
+                    </h4>
+                    <ul class="mb-0">
+                        <li><strong>Real-time Status:</strong> Live updates on running jobs with refresh intervals</li>
+                        <li><strong>Execution Details:</strong> Detailed view of each workflow step and progress</li>
+                        <li><strong>Performance Data:</strong> Timing, resource usage, and efficiency metrics</li>
+                        <li><strong>Error Tracking:</strong> Immediate notification and detailed logging of issues</li>
+                    </ul>
+                </div>
+                
+                <h3 class="h4 mb-3 mt-4">
+                    <i class="fas fa-chart-line text-primary me-2"></i>Metrics & Analytics
+                </h3>
+                <div class="nav-path mb-4">
+                    <strong><i class="fas fa-route me-2"></i>Access:</strong> Sidebar → Management Console → Metrics
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6 col-lg-3">
+                        <div class="feature-card text-center">
+                            <i class="fas fa-stopwatch text-primary fa-2x mb-3"></i>
+                            <h4>Execution Times</h4>
+                            <p>Average, minimum, and maximum processing times with trend analysis</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-3">
+                        <div class="feature-card text-center">
+                            <i class="fas fa-check-circle text-success fa-2x mb-3"></i>
+                            <h4>Success Rates</h4>
+                            <p>Percentage of successful transformations and error pattern analysis</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-3">
+                        <div class="feature-card text-center">
+                            <i class="fas fa-database text-info fa-2x mb-3"></i>
+                            <h4>Data Volume</h4>
+                            <p>Amount of data processed over time with growth projections</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-3">
+                        <div class="feature-card text-center">
+                            <i class="fas fa-server text-warning fa-2x mb-3"></i>
+                            <h4>Resource Usage</h4>
+                            <p>CPU, memory, and storage utilization with optimization recommendations</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Reports Section -->
+            <section id="reports" class="fade-in mt-5">
+                <div class="d-flex align-items-center mb-4">
+                    <div class="card-icon me-3">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <h2 class="h1 mb-0">Reports & Analytics</h2>
+                </div>
+                
+                <div class="nav-path mb-4">
+                    <strong><i class="fas fa-route me-2"></i>Access:</strong> Sidebar → Management Console → Reports
+                </div>
+                
+                <h3 class="h4 mb-3">
+                    <i class="fas fa-chart-pie text-primary me-2"></i>Available Report Types
+                </h3>
+                
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <h4><i class="fas fa-chart-bar text-primary"></i> Chart Reports</h4>
+                        <ul>
+                            <li>Visual data distributions with interactive charts</li>
+                            <li>Pie charts for data categorization</li>
+                            <li>Bar charts for comparative analysis</li>
+                            <li>Time series analysis for trend identification</li>
+                        </ul>
+                    </div>
+                    <div class="feature-card">
+                        <h4><i class="fas fa-table text-success"></i> Table Reports</h4>
+                        <ul>
+                            <li>Structured data views with advanced filtering</li>
+                            <li>Sortable columns for easy navigation</li>
+                            <li>Export capabilities (CSV, Excel, PDF)</li>
+                            <li>Advanced search and filtering options</li>
+                        </ul>
+                    </div>
+                    <div class="feature-card">
+                        <h4><i class="fas fa-chart-line text-info"></i> Metrics Reports</h4>
+                        <ul>
+                            <li>Key performance indicator dashboards</li>
+                            <li>Performance metrics and benchmarks</li>
+                            <li>Trend analysis and forecasting</li>
+                            <li>Comparative period analysis</li>
+                        </ul>
+                    </div>
+                    <div class="feature-card">
+                        <h4><i class="fas fa-file-code text-warning"></i> Raw Data Reports</h4>
+                        <ul>
+                            <li>Complete dataset exports and previews</li>
+                            <li>JSON structure preview and validation</li>
+                            <li>Data quality assessment reports</li>
+                            <li>Debug information and error logs</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="alert alert-info alert-modern">
+                    <h4 class="h5">
+                        <i class="fas fa-robot me-2"></i>Auto-Detection Features:
+                    </h4>
+                    <ul class="mb-0">
+                        <li><strong>Smart Categorization:</strong> Reports are automatically categorized based on JSON structure and content</li>
+                        <li><strong>Automatic Chart Generation:</strong> Compatible data automatically generates appropriate visualizations</li>
+                        <li><strong>Statistics Calculation:</strong> Automatic calculation of averages, min/max values, and totals</li>
+                        <li><strong>Data Location:</strong> Reports are stored in <code>C:\Docker\airflow3x2\data\metrics_json_files</code></li>
+                    </ul>
+                </div>
+                
+                <h3 class="h4 mb-3 mt-4">
+                    <i class="fas fa-search text-primary me-2"></i>How to Access Reports
+                </h3>
+                <div class="modern-card p-4">
+                    <ol class="mb-0">
+                        <li><strong>Navigate to Reports:</strong> Use sidebar → Management Console → Reports</li>
+                        <li><strong>Auto-loading:</strong> Reports are automatically loaded from Airflow data directory</li>
+                        <li><strong>View Details:</strong> Click on any report to access detailed analytics and visualizations</li>
+                        <li><strong>Interactive Charts:</strong> Charts and visualizations are generated automatically based on data structure</li>
+                        <li><strong>Export Options:</strong> Use built-in export functionality for sharing and archiving</li>
+                    </ol>
+                </div>
+            </section>
+
+            <!-- Troubleshooting Section -->
+            <section id="troubleshooting" class="fade-in mt-5">
+                <div class="d-flex align-items-center mb-4">
+                    <div class="card-icon me-3">
+                        <i class="fas fa-tools"></i>
+                    </div>
+                    <h2 class="h1 mb-0">Troubleshooting Guide</h2>
+                </div>
+                
+                <h3 class="h4 mb-3">
+                    <i class="fas fa-wrench text-primary me-2"></i>Common Issues & Solutions
+                </h3>
+                
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="modern-card p-4 mb-4">
+                            <h4 class="text-danger">
+                                <i class="fas fa-exclamation-triangle me-2"></i>Connection Issues
+                            </h4>
+                            <p><strong>Problem:</strong> Red "Airflow Disconnected" status indicator in top-right corner</p>
+                            <div class="alert alert-success alert-modern mt-3">
+                                <strong>Solutions:</strong>
+                                <ol class="mb-0 mt-2">
+                                    <li>Check if Airflow is running by navigating to <code>http://localhost:8083</code></li>
+                                    <li>Click the "Retry Connection" button in the connection warning banner</li>
+                                    <li>Verify network connectivity and firewall settings</li>
+                                    <li>Confirm Airflow credentials are correct (default: admin/admin123)</li>
+                                    <li>Restart the Airflow service if necessary</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-6">
+                        <div class="modern-card p-4 mb-4">
+                            <h4 class="text-danger">
+                                <i class="fas fa-upload me-2"></i>File Upload Problems
+                            </h4>
+                            <p><strong>Problem:</strong> CSV upload fails, shows validation errors, or file is rejected</p>
+                            <div class="alert alert-success alert-modern mt-3">
+                                <strong>Solutions:</strong>
+                                <ol class="mb-0 mt-2">
+                                    <li>Verify file format is valid CSV with proper structure</li>
+                                    <li>Check file size - ensure it's within reasonable limits (typically under 50MB)</li>
+                                    <li>Ensure CSV has proper headers in the first row</li>
+                                    <li>Remove special characters, accents, or symbols from column headers</li>
+                                    <li>Verify file encoding is UTF-8 compatible</li>
+                                    <li>Check for empty rows or malformed CSV structure</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-6">
+                        <div class="modern-card p-4 mb-4">
+                            <h4 class="text-danger">
+                                <i class="fas fa-cogs me-2"></i>Schema Generation Errors
+                            </h4>
+                            <p><strong>Problem:</strong> "Analyze" button fails or produces incorrect/incomplete schema</p>
+                            <div class="alert alert-success alert-modern mt-3">
+                                <strong>Solutions:</strong>
+                                <ol class="mb-0 mt-2">
+                                    <li>Verify CSV headers are valid field names (no spaces, special characters)</li>
+                                    <li>Check for special characters or non-standard encoding in data</li>
+                                    <li>Ensure consistent data types within each column</li>
+                                    <li>Review data preview for anomalies or unexpected values</li>
+                                    <li>Try with a smaller sample file to isolate issues</li>
+                                    <li>Check Airflow DAG logs for detailed error information</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-6">
+                        <div class="modern-card p-4 mb-4">
+                            <h4 class="text-danger">
+                                <i class="fas fa-sync-alt me-2"></i>Transformation Failures
+                            </h4>
+                            <p><strong>Problem:</strong> Data transformation step fails or produces errors</p>
+                            <div class="alert alert-success alert-modern mt-3">
+                                <strong>Solutions:</strong>
+                                <ol class="mb-0 mt-2">
+                                    <li>Verify schema is properly finalized before transformation</li>
+                                    <li>Check input data quality and consistency</li>
+                                    <li>Review transformation logs in the Jobs section</li>
+                                    <li>Ensure sufficient system resources (memory, disk space)</li>
+                                    <li>Try processing smaller batches if dealing with large files</li>
+                                    <li>Validate InfoArchive connectivity and permissions</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <h3 class="h4 mb-3 mt-4">
+                    <i class="fas fa-headset text-primary me-2"></i>Getting Additional Help
+                </h3>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="feature-card text-center">
+                            <i class="fas fa-question-circle text-primary fa-3x mb-3"></i>
+                            <h4>Built-in Help System</h4>
+                            <ul class="text-start">
+                                <li><strong>Help Button:</strong> Click the "?" icon in the top-right corner</li>
+                                <li><strong>Setup Instructions:</strong> Comprehensive configuration guide</li>
+                                <li><strong>Tooltips:</strong> Hover over interface elements for context help</li>
+                                <li><strong>Status Messages:</strong> Real-time guidance and feedback</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="feature-card text-center">
+                            <i class="fas fa-robot text-info fa-3x mb-3"></i>
+                            <h4>AI Assistant Chatbot</h4>
+                            <ul class="text-start">
+                                <li><strong>Access:</strong> Available on all pages (bottom-right corner)</li>
+                                <li><strong>Capabilities:</strong> Context-aware assistance and troubleshooting</li>
+                                <li><strong>Multi-LLM Support:</strong> Intelligent fallback system for reliability</li>
+                                <li><strong>Real-time Help:</strong> Instant answers to questions and issues</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="alert alert-info alert-modern">
+                    <h4 class="h5">
+                        <i class="fas fa-comments me-2"></i>Sample AI Assistant Commands:
+                    </h4>
+                    <ul class="mb-0">
+                        <li>"What's my dashboard status?" - Get current system overview</li>
+                        <li>"Show me active DAGs" - Display currently running workflows</li>
+                        <li>"How do I fix connection issues?" - Troubleshooting guidance</li>
+                        <li>"Explain the schema generation process" - Detailed workflow explanation</li>
+                        <li>"What reports are available?" - Report types and access information</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Advanced Features -->
+            <section id="advanced" class="fade-in mt-5">
+                <div class="d-flex align-items-center mb-4">
+                    <div class="card-icon me-3">
+                        <i class="fas fa-cog"></i>
+                    </div>
+                    <h2 class="h1 mb-0">Advanced Features</h2>
+                </div>
+                
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <h4><i class="fas fa-palette text-primary"></i> Theme & Appearance</h4>
+                        <ul>
+                            <li>Automatic dark/light mode switching</li>
+                            <li>Responsive design for all devices</li>
+                            <li>Full WCAG 2.1 AA accessibility compliance</li>
+                            <li>Modern, professional interface design</li>
+                        </ul>
+                    </div>
+                    <div class="feature-card">
+                        <h4><i class="fas fa-shield-alt text-success"></i> Security & Authentication</h4>
+                        <ul>
+                            <li>JWT token-based secure authentication</li>
+                            <li>Comprehensive input validation and sanitization</li>
+                            <li>Graceful error handling with boundaries</li>
+                            <li>Complete audit trails and activity logging</li>
+                        </ul>
+                    </div>
+                    <div class="feature-card">
+                        <h4><i class="fas fa-tachometer-alt text-warning"></i> Performance Features</h4>
+                        <ul>
+                            <li>Intelligent request caching system</li>
+                            <li>Request deduplication to prevent duplicates</li>
+                            <li>Background processing for non-blocking operations</li>
+                            <li>Real-time progress monitoring and updates</li>
+                        </ul>
+                    </div>
+                    <div class="feature-card">
+                        <h4><i class="fas fa-plug text-info"></i> Integration Capabilities</h4>
+                        <ul>
+                            <li>Full Apache Airflow 3.x integration</li>
+                            <li>Direct InfoArchive API connectivity</li>
+                            <li>Comprehensive REST API access</li>
+                            <li>WebSocket-based real-time notifications</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Quick Reference -->
+            <section id="reference" class="fade-in mt-5">
+                <div class="d-flex align-items-center mb-4">
+                    <div class="card-icon me-3">
+                        <i class="fas fa-bookmark"></i>
+                    </div>
+                    <h2 class="h1 mb-0">Quick Reference</h2>
+                </div>
+                
+                <h3 class="h4 mb-3">
+                    <i class="fas fa-rocket text-primary me-2"></i>Essential Shortcuts
+                </h3>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="feature-card">
+                            <h4><i class="fas fa-keyboard text-primary"></i> Keyboard Shortcuts</h4>
+                            <ul>
+                                <li><strong>Ctrl/Cmd + B:</strong> Toggle sidebar visibility</li>
+                                <li><strong>Help Button:</strong> Access setup instructions</li>
+                                <li><strong>Escape:</strong> Close modals and dialogs</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="feature-card">
+                            <h4><i class="fas fa-map-signs text-success"></i> Navigation Quick Guide</h4>
+                            <ol>
+                                <li><strong>Start Here:</strong> Dashboard for system overview</li>
+                                <li><strong>Upload Data:</strong> Structured Data Archival → Upload</li>
+                                <li><strong>Monitor Progress:</strong> Management Console → Jobs</li>
+                                <li><strong>View Results:</strong> Management Console → Reports</li>
+                                <li><strong>Get Help:</strong> AI Assistant or Help button</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+                
+                <h3 class="h4 mb-3 mt-4">
+                    <i class="fas fa-bullseye text-primary me-2"></i>Complete Success Workflow
+                </h3>
+                <div class="workflow-diagram">
+                    <div class="workflow-steps">
+                        <div class="workflow-step">Dashboard</div>
+                        <i class="fas fa-arrow-right workflow-arrow"></i>
+                        <div class="workflow-step">Upload CSV</div>
+                        <i class="fas fa-arrow-right workflow-arrow"></i>
+                        <div class="workflow-step">Configure Schema</div>
+                        <i class="fas fa-arrow-right workflow-arrow"></i>
+                        <div class="workflow-step">Validate & Finalize</div>
+                        <i class="fas fa-arrow-right workflow-arrow"></i>
+                        <div class="workflow-step">Download Schema</div>
+                        <i class="fas fa-arrow-right workflow-arrow"></i>
+                        <div class="workflow-step">Transform Data</div>
+                        <i class="fas fa-arrow-right workflow-arrow"></i>
+                        <div class="workflow-step">Monitor Results</div>
+                        <i class="fas fa-arrow-right workflow-arrow"></i>
+                        <div class="workflow-step">View Reports</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Support Section -->
+            <section id="support" class="fade-in mt-5">
+                <div class="d-flex align-items-center mb-4">
+                    <div class="card-icon me-3">
+                        <i class="fas fa-life-ring"></i>
+                    </div>
+                    <h2 class="h1 mb-0">Support & Resources</h2>
+                </div>
+                
+                <h3 class="h4 mb-3">
+                    <i class="fas fa-link text-primary me-2"></i>Important URLs
+                </h3>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="feature-card">
+                            <h4><i class="fas fa-globe text-primary"></i> Application URLs</h4>
+                            <ul>
+                                <li><strong>Main Application:</strong> <code>http://localhost:3002</code></li>
+                                <li><strong>Airflow Interface:</strong> <code>http://localhost:8083</code></li>
+                                <li><strong>API Documentation:</strong> <code>http://localhost:3002/api</code></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="feature-card">
+                            <h4><i class="fas fa-folder text-success"></i> Key Directories</h4>
+                            <ul>
+                                <li><strong>Data Input:</strong> <code>C:\Docker\airflow3x2\data\incomingcsv</code></li>
+                                <li><strong>Processed Data:</strong> <code>C:\Docker\airflow3x2\data\processedcsv</code></li>
+                                <li><strong>Reports:</strong> <code>C:\Docker\airflow3x2\reports</code></li>
+                                <li><strong>DAGs:</strong> <code>C:\Docker\airflow3x2\dags</code></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <h3 class="h4 mb-3 mt-4">
+                    <i class="fas fa-exclamation-triangle text-danger me-2"></i>Emergency Procedures
+                </h3>
+                <div class="alert alert-danger alert-modern">
+                    <h4 class="h5">
+                        <i class="fas fa-ambulance me-2"></i>System Recovery Steps
+                    </h4>
+                    <ol class="mb-0">
+                        <li><strong>Complete Restart:</strong> Stop application → Restart Airflow → Restart application</li>
+                        <li><strong>Clear Cache:</strong> Use browser developer tools to clear application cache</li>
+                        <li><strong>Reset Workflow:</strong> Use "Start Over" button to reset current session</li>
+                        <li><strong>Data Recovery:</strong> Check processed data directories for recovered files</li>
+                        <li><strong>Connection Reset:</strong> Click "Retry Connection" or restart services</li>
+                    </ol>
+                </div>
+                
+                <div class="alert alert-success alert-modern">
+                    <p class="mb-0">
+                        <strong><i class="fas fa-clipboard me-2"></i>Note:</strong> This guide covers the standard workflow for InfoArchive Data Transformer. For custom configurations, enterprise deployments, or specialized requirements, consult the technical documentation or contact your system administrator.
+                    </p>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <h5 class="mb-3">
+                        <i class="fas fa-database me-2"></i>InfoArchive Data Transformer
+                    </h5>
+                    <p class="mb-2"><strong>Complete Navigation Guide</strong></p>
+                    <p class="mb-2">Version 2.0 - Sprint 2 Release | Enterprise Data Processing & Apache Airflow Integration</p>
+                    <p class="mb-0">
+                        <i class="fas fa-sync-alt me-2"></i>Last Updated: Based on current application analysis and feature set
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Update active navigation link on scroll
+        window.addEventListener('scroll', function() {
+            const sections = document.querySelectorAll('section[id]');
+            const navLinks = document.querySelectorAll('.nav-link');
+            
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (scrollY >= (sectionTop - 100)) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + current) {
+                    link.classList.add('active');
+                }
+            });
+        });
+
+        // Add fade-in animation to elements when they come into view
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Observe all fade-in elements
+        document.querySelectorAll('.fade-in').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(20px)';
+            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>
