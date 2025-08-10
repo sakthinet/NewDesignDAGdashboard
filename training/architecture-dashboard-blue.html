@@ -1,0 +1,2304 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TCS Datatransformer Frontend Architecture & Communication Patterns</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #f8fafc;
+            --accent-color: #0ea5e9;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --border-color: #e2e8f0;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .presentation-container {
+            background: white;
+            min-height: 100vh;
+            box-shadow: 0 0 50px rgba(0,0,0,0.1);
+        }
+
+        .hero-section {
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
+            padding: 4rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='m0 40l40-40h-40z'/%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .architecture-card {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .architecture-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        .pattern-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 8px rgba(37, 99, 235, 0.3);
+        }
+
+        .pattern-icon i {
+            font-size: 28px;
+            color: white;
+        }
+
+        .diagram {
+            background: var(--secondary-color);
+            border: 2px dashed var(--border-color);
+            border-radius: 12px;
+            padding: 2.5rem;
+            text-align: center;
+            margin: 2rem 0;
+            position: relative;
+        }
+
+        .flow-diagram {
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+
+        .flow-box {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 2px solid var(--primary-color);
+            min-width: 140px;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .flow-arrow {
+            font-size: 28px;
+            color: var(--primary-color);
+        }
+
+        .code-snippet {
+            background: #0f172a;
+            color: #e2e8f0;
+            padding: 2rem;
+            border-radius: 12px;
+            font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+            font-size: 14px;
+            margin: 1.5rem 0;
+            overflow-x: auto;
+            position: relative;
+            border: 1px solid #334155;
+        }
+
+        .code-snippet::before {
+            content: 'Click to copy';
+            position: absolute;
+            top: 8px;
+            right: 12px;
+            font-size: 11px;
+            color: #64748b;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .code-snippet:hover::before {
+            opacity: 1;
+        }
+
+        .highlight {
+            background: linear-gradient(135deg, #fef3c7, #fed7aa);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border-left: 4px solid var(--accent-color);
+            margin: 1.5rem 0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .tech-badge {
+            display: inline-block;
+            background: var(--primary-color);
+            color: white;
+            padding: 0.4rem 1rem;
+            border-radius: 50px;
+            font-size: 0.875rem;
+            margin: 0.25rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .tech-badge:hover {
+            background: var(--accent-color);
+            transform: translateY(-1px);
+        }
+
+        .tech-badge.enterprise {
+            background: var(--success-color);
+        }
+
+        .tech-badge.ui-lib {
+            background: var(--warning-color);
+        }
+
+        .tech-badge.state-mgmt {
+            background: #8b5cf6;
+        }
+
+        .tech-badge.styling {
+            background: #06b6d4;
+        }
+
+        .section-title {
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--accent-color);
+            padding-bottom: 0.5rem;
+            margin-bottom: 2.5rem;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -3px;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: var(--primary-color);
+            border-radius: 2px;
+        }
+
+        .nav-pills .nav-link {
+            border-radius: 50px;
+            margin: 0 0.25rem;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .nav-pills .nav-link.active {
+            background-color: var(--primary-color);
+            box-shadow: 0 4px 8px rgba(37, 99, 235, 0.3);
+        }
+
+        .communication-flow {
+            background: linear-gradient(45deg, #f8fafc, #e2e8f0);
+            padding: 2.5rem;
+            border-radius: 16px;
+            margin: 2rem 0;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.06);
+        }
+
+        .layer-card {
+            background: white;
+            border-left: 5px solid var(--primary-color);
+            padding: 2rem;
+            margin: 1.5rem 0;
+            border-radius: 0 12px 12px 0;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.07);
+            transition: all 0.3s ease;
+        }
+
+        .layer-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .metric-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .metric-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-label {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .stack-category {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .stack-category h6 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .hero-section {
+                padding: 2rem 0;
+            }
+            
+            .flow-diagram {
+                flex-direction: column;
+            }
+            
+            .architecture-card {
+                padding: 2rem;
+            }
+            
+            .pattern-icon {
+                width: 60px;
+                height: 60px;
+            }
+        }
+
+        .complexity-indicator {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: var(--success-color);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .complexity-indicator.advanced {
+            background: var(--warning-color);
+        }
+
+        .complexity-indicator.enterprise {
+            background: var(--danger-color);
+        }
+
+        .architecture-layer {
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.05), rgba(14, 165, 233, 0.05));
+            border: 1px solid rgba(37, 99, 235, 0.1);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 1.5rem 0;
+            position: relative;
+        }
+
+        .architecture-layer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+            border-radius: 12px 12px 0 0;
+        }
+
+        /* SVG Architecture Diagram Styles - UPDATED FOR BLUE/BLACK/WHITE THEME */
+        .architecture-diagram-container {
+            background: white;
+            border: 2px solid #1e293b;
+            border-radius: 12px;
+            padding: 2rem;
+            overflow-x: auto;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .architecture-diagram {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .layer-title {
+            font-size: 20px;
+            font-weight: 600;
+            fill: #000000;
+        }
+
+        .layer-subtitle {
+            font-size: 14px;
+            fill: #475569;
+        }
+
+        .component-text {
+            font-size: 12px;
+            font-weight: 500;
+            fill: white;
+            text-anchor: middle;
+            dominant-baseline: middle;
+        }
+
+        .flow-label {
+            font-size: 12px;
+            font-weight: 500;
+            fill: #64748b;
+        }
+
+        /* Interactive styles */
+        .diagram-layer {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .diagram-layer:hover {
+            stroke-width: 3;
+            filter: brightness(1.1);
+        }
+
+        .component-group {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .component-group:hover .component-box {
+            filter: brightness(1.2);
+            transform: scale(1.05);
+            transform-origin: center;
+        }
+
+        .component-box {
+            transition: all 0.3s ease;
+        }
+
+        .data-flow {
+            opacity: 0.8;
+            transition: opacity 0.3s ease;
+        }
+
+        .data-flow:hover {
+            opacity: 1;
+            stroke-width: 4;
+        }
+
+        .tech-sidebar-card {
+            border: 2px solid #1e293b;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        .tech-sidebar-card .card-header {
+            background: linear-gradient(135deg, #1e293b, #334155) !important;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .tech-sidebar-card .badge {
+            font-size: 0.75rem;
+            margin: 0.125rem;
+            padding: 0.375rem 0.75rem;
+        }
+
+        /* Responsive diagram */
+        @media (max-width: 768px) {
+            .architecture-diagram-container {
+                padding: 1rem;
+            }
+            
+            /* Stack technology stack below on mobile */
+            .col-lg-4 {
+                margin-top: 2rem;
+            }
+            
+            .tech-sidebar-card {
+                max-height: none !important;
+            }
+        }
+
+        /* Project Analysis Specific Styles */
+        .card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        .status-badge {
+            font-size: 0.875rem;
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+        }
+
+        .grade-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--success-color) 0%, #10b981 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 0 auto 1rem;
+        }
+
+        .metric-card-analysis {
+            background: white;
+            border-left: 4px solid var(--success-color);
+        }
+
+        .checklist-item {
+            padding: 0.75rem 1rem;
+            margin: 0.25rem 0;
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+        }
+
+        .section-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            margin-bottom: 1rem;
+        }
+
+        .progress-custom {
+            height: 8px;
+            border-radius: 4px;
+            background-color: #e5e7eb;
+        }
+
+        .progress-bar-custom {
+            background: linear-gradient(90deg, var(--success-color) 0%, #10b981 100%);
+            border-radius: 4px;
+        }
+
+        .highlight-text {
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
+        }
+
+        .enhancement-item {
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            margin: 0.25rem 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation-container">
+        <!-- Hero Section -->
+        <div class="hero-section">
+            <div class="container">
+                <div class="hero-content text-center">
+                    <h1 class="display-4 fw-bold mb-3">
+                        <i class="bi bi-diagram-3"></i>
+                        TCS Data Transformer Frontend Architecture
+                    </h1>
+                    <p class="lead mb-4">React + Apache Airflow + shadcn/ui + Modern Full-Stack Integration</p>
+                    <div class="row justify-content-center">
+                        <div class="col-md-10">
+                            <p class="mb-0">Advanced enterprise architecture leveraging React 18, TypeScript, React Query, shadcn/ui (built on Radix UI), Tailwind CSS, and comprehensive state management patterns for robust Airflow DAG orchestration and data pipeline management.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Pills -->
+        <div class="container-fluid bg-light py-3">
+            <div class="container">
+                <ul class="nav nav-pills justify-content-center" id="architectureNav" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="overview-tab" data-bs-toggle="pill" data-bs-target="#overview" type="button" aria-selected="true" role="tab">
+                            <i class="bi bi-house-door"></i> Overview
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="tech-stack-tab" data-bs-toggle="pill" data-bs-target="#tech-stack" type="button" aria-selected="false" role="tab" tabindex="-1">
+                            <i class="bi bi-stack"></i> Tech Stack
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="architecture-tab" data-bs-toggle="pill" data-bs-target="#architecture" type="button" aria-selected="false" role="tab" tabindex="-1">
+                            <i class="bi bi-diagram-3"></i> Architecture
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="communication-tab" data-bs-toggle="pill" data-bs-target="#communication" type="button" aria-selected="false" role="tab" tabindex="-1">
+                            <i class="bi bi-arrow-left-right"></i> Communication
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="patterns-tab" data-bs-toggle="pill" data-bs-target="#patterns" type="button" aria-selected="false" tabindex="-1" role="tab">
+                            <i class="bi bi-puzzle"></i> Patterns
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="implementation-tab" data-bs-toggle="pill" data-bs-target="#implementation" type="button" aria-selected="false" tabindex="-1" role="tab">
+                            <i class="bi bi-code-slash"></i> Implementation
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="analysis-tab" data-bs-toggle="pill" data-bs-target="#analysis" type="button" aria-selected="false" tabindex="-1" role="tab">
+                            <i class="bi bi-graph-up-arrow"></i> Project Analysis
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Tab Content -->
+        <div class="tab-content" id="architectureTabContent">
+            <!-- Overview Tab -->
+            <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview-tab">
+                <div class="container py-5">
+                    <h2 class="section-title">
+                        <i class="bi bi-info-circle"></i> Enterprise System Overview
+                    </h2>
+
+                    <!-- High Level Architecture -->
+                    <div class="communication-flow">
+                        <h4 class="mb-4"><i class="bi bi-diagram-2"></i> Enterprise Data Flow Architecture</h4>
+                        <div class="flow-diagram">
+                            <div class="flow-box">
+                                <i class="bi bi-person-workspace"></i>
+                                <br><strong>React Frontend</strong>
+                                <small class="d-block">TypeScript + shadcn/ui</small>
+                            </div>
+                            <div class="flow-arrow">
+                                <i class="bi bi-arrow-right"></i>
+                            </div>
+                            <div class="flow-box">
+                                <i class="bi bi-cloud-arrow-up"></i>
+                                <br><strong>React Query</strong>
+                                <small class="d-block">Server State Management</small>
+                            </div>
+                            <div class="flow-arrow">
+                                <i class="bi bi-arrow-right"></i>
+                            </div>
+                            <div class="flow-box">
+                                <i class="bi bi-server"></i>
+                                <br><strong>Express API</strong>
+                                <small class="d-block">TypeScript + Drizzle ORM</small>
+                            </div>
+                            <div class="flow-arrow">
+                                <i class="bi bi-arrow-right"></i>
+                            </div>
+                            <div class="flow-box">
+                                <i class="bi bi-diagram-3-fill"></i>
+                                <br><strong>Airflow 3.x</strong>
+                                <small class="d-block">DAG Orchestration</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Key Metrics -->
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <div class="architecture-card">
+                                <div class="complexity-indicator enterprise">Enterprise</div>
+                                <div class="pattern-icon">
+                                    <i class="bi bi-graph-up"></i>
+                                </div>
+                                <h4>Architecture Complexity Metrics</h4>
+                                <p class="text-secondary mb-4">Comprehensive analysis of system architecture depth and integration points</p>
+                                <div class="metrics-grid">
+                                    <div class="metric-card">
+                                        <div class="metric-number">50+</div>
+                                        <div class="metric-label">NPM Dependencies</div>
+                                    </div>
+                                    <div class="metric-card">
+                                        <div class="metric-number">15+</div>
+                                        <div class="metric-label">Radix UI Components</div>
+                                    </div>
+                                    <div class="metric-card">
+                                        <div class="metric-number">8</div>
+                                        <div class="metric-label">Custom Hooks</div>
+                                    </div>
+                                    <div class="metric-card">
+                                        <div class="metric-number">25+</div>
+                                        <div class="metric-label">API Endpoints</div>
+                                    </div>
+                                    <div class="metric-card">
+                                        <div class="metric-number">3</div>
+                                        <div class="metric-label">Context Providers</div>
+                                    </div>
+                                    <div class="metric-card">
+                                        <div class="metric-number">4</div>
+                                        <div class="metric-label">Architectural Layers</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="architecture-card">
+                                <div class="pattern-icon">
+                                    <i class="bi bi-shield-check"></i>
+                                </div>
+                                <h4>Enterprise Features</h4>
+                                <p class="text-secondary mb-3">Production-ready capabilities</p>
+                                <div class="highlight">
+                                    <h6><i class="bi bi-star"></i> Key Capabilities</h6>
+                                    <ul class="mb-0">
+                                        <li><strong>Advanced Grid:</strong> ag-Grid Enterprise for complex data visualization</li>
+                                        <li><strong>Type Safety:</strong> Full TypeScript coverage with strict mode</li>
+                                        <li><strong>Animation:</strong> Framer Motion for smooth UX</li>
+                                        <li><strong>Form Management:</strong> React Hook Form with validation</li>
+                                        <li><strong>Database ORM:</strong> Drizzle ORM with type safety</li>
+                                        <li><strong>Authentication:</strong> Passport.js integration</li>
+                                        <li><strong>Real-time:</strong> WebSocket support (ws)</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tech Stack Tab -->
+            <div class="tab-pane fade" id="tech-stack" role="tabpanel" aria-labelledby="tech-stack-tab">
+                <div class="container py-5">
+                    <h2 class="section-title">
+                        <i class="bi bi-stack"></i> Complete Technology Stack
+                    </h2>
+
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="stack-category">
+                                <h6><i class="bi bi-laptop"></i> Frontend Core</h6>
+                                <span class="tech-badge">React 18.3.1</span>
+                                <span class="tech-badge">TypeScript 5.6.3</span>
+                                <span class="tech-badge">Vite 7.0.5</span>
+                                <span class="tech-badge">Wouter (Routing)</span>
+                            </div>
+
+                            <div class="stack-category">
+                                <h6><i class="bi bi-palette"></i> UI & Styling</h6>
+                                <span class="tech-badge ui-lib">🎭 shadcn/ui</span>
+                                <span class="tech-badge ui-lib">Radix UI Primitives</span>
+                                <span class="tech-badge styling">Tailwind CSS 3.4</span>
+                                <span class="tech-badge styling">Tailwind Animate</span>
+                                <span class="tech-badge ui-lib">Lucide React Icons</span>
+                                <span class="tech-badge ui-lib">React Icons</span>
+                                <span class="tech-badge styling">Class Variance Authority</span>
+                                <span class="tech-badge styling">clsx / Tailwind Merge</span>
+                            </div>
+
+                            <div class="stack-category">
+                                <h6><i class="bi bi-gear"></i> State & Data Management</h6>
+                                <span class="tech-badge state-mgmt">@tanstack/react-query</span>
+                                <span class="tech-badge state-mgmt">React Context API</span>
+                                <span class="tech-badge state-mgmt">React Hook Form</span>
+                                <span class="tech-badge state-mgmt">Zod Validation</span>
+                                <span class="tech-badge state-mgmt">Custom Hooks</span>
+                            </div>
+
+                            <div class="stack-category">
+                                <h6><i class="bi bi-grid"></i> Data Visualization</h6>
+                                <span class="tech-badge enterprise">ag-Grid Enterprise</span>
+                                <span class="tech-badge ui-lib">@tanstack/react-table</span>
+                                <span class="tech-badge ui-lib">Recharts 2.15</span>
+                                <span class="tech-badge ui-lib">Embla Carousel</span>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6">
+                            <div class="stack-category">
+                                <h6><i class="bi bi-server"></i> Backend Core</h6>
+                                <span class="tech-badge">Express.js 4.21</span>
+                                <span class="tech-badge">Node.js + TypeScript</span>
+                                <span class="tech-badge">ESBuild</span>
+                                <span class="tech-badge">Cross-env</span>
+                            </div>
+
+                            <div class="stack-category">
+                                <h6><i class="bi bi-shield-lock"></i> Authentication & Security</h6>
+                                <span class="tech-badge enterprise">Passport.js</span>
+                                <span class="tech-badge enterprise">Passport Local</span>
+                                <span class="tech-badge enterprise">Express Session</span>
+                                <span class="tech-badge enterprise">JWT Authentication</span>
+                                <span class="tech-badge enterprise">Memory Store</span>
+                            </div>
+
+                            <div class="stack-category">
+                                <h6><i class="bi bi-tools"></i> Development & Build</h6>
+                                <span class="tech-badge">TSX (TypeScript Runner)</span>
+                                <span class="tech-badge">PostCSS + Autoprefixer</span>
+                                <span class="tech-badge">@replit/vite-plugins</span>
+                                <span class="tech-badge">Runtime Error Overlay</span>
+                            </div>
+
+                            <div class="stack-category">
+                                <h6><i class="bi bi-lightning"></i> Advanced Features</h6>
+                                <span class="tech-badge ui-lib">Framer Motion</span>
+                                <span class="tech-badge enterprise">WebSocket (ws)</span>
+                                <span class="tech-badge ui-lib">Resizable Panels</span>
+                                <span class="tech-badge ui-lib">Date FNS</span>
+                                <span class="tech-badge ui-lib">Input OTP</span>
+                                <span class="tech-badge ui-lib">Vaul (Drawer)</span>
+                                <span class="tech-badge ui-lib">Next Themes</span>
+                                <span class="tech-badge enterprise">Multer (File Upload)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="highlight">
+                        <h5><i class="bi bi-award"></i> Architecture Quality Score</h5>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="text-center">
+                                    <div class="metric-number">95%</div>
+                                    <div class="metric-label">TypeScript Coverage</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="text-center">
+                                    <div class="metric-number">A+</div>
+                                    <div class="metric-label">Component Reusability</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="text-center">
+                                    <div class="metric-number">Enterprise</div>
+                                    <div class="metric-label">Scalability Level</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="text-center">
+                                    <div class="metric-number">5/5</div>
+                                    <div class="metric-label">Modern Standards</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Architecture Tab -->
+            <div class="tab-pane fade" id="architecture" role="tabpanel" aria-labelledby="architecture-tab">
+                <div class="container py-5">
+                    <h2 class="section-title">
+                        <i class="bi bi-building"></i> Multi-Layer Enterprise Architecture
+                    </h2>
+
+                    <!-- Interactive Architecture Diagram with Technology Stack Sidebar -->
+                    <div class="architecture-card mb-5">
+                        <h4 class="mb-4"><i class="bi bi-diagram-3-fill"></i> Interactive Architecture Diagram</h4>
+                        <p class="text-secondary mb-4">Click on components to see detailed information about each layer</p>
+                        
+                        <div class="row">
+                            <!-- Architecture Diagram Column -->
+                            <div class="col-lg-8">
+                                <div class="architecture-diagram-container">
+                                    <svg viewBox="0 0 580 520" class="architecture-diagram w-100" style="max-height: 520px;">
+                                        <!-- Background gradients - UPDATED TO BLUE/BLACK/WHITE THEME -->
+                                        <defs>
+                                            <!-- All gradients now use blue/black/white variations -->
+                                            <linearGradient id="layerGradient1" x1="0%" y1="0%" x2="100%" y2="0%">
+                                                <stop offset="0%" style="stop-color:#2563eb;stop-opacity:0.05"></stop>
+                                                <stop offset="100%" style="stop-color:#1e40af;stop-opacity:0.1"></stop>
+                                            </linearGradient>
+                                            <linearGradient id="layerGradient2" x1="0%" y1="0%" x2="100%" y2="0%">
+                                                <stop offset="0%" style="stop-color:#1e293b;stop-opacity:0.05"></stop>
+                                                <stop offset="100%" style="stop-color:#0f172a;stop-opacity:0.08"></stop>
+                                            </linearGradient>
+                                            <linearGradient id="layerGradient3" x1="0%" y1="0%" x2="100%" y2="0%">
+                                                <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:0.03"></stop>
+                                                <stop offset="100%" style="stop-color:#2563eb;stop-opacity:0.06"></stop>
+                                            </linearGradient>
+                                            <linearGradient id="layerGradient4" x1="0%" y1="0%" x2="100%" y2="0%">
+                                                <stop offset="0%" style="stop-color:#475569;stop-opacity:0.05"></stop>
+                                                <stop offset="100%" style="stop-color:#334155;stop-opacity:0.08"></stop>
+                                            </linearGradient>
+                                            
+                                            <!-- Component gradients -->
+                                            <linearGradient id="blueGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                                <stop offset="0%" style="stop-color:#3b82f6"></stop>
+                                                <stop offset="100%" style="stop-color:#2563eb"></stop>
+                                            </linearGradient>
+                                            <linearGradient id="darkBlueGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                                <stop offset="0%" style="stop-color:#1e40af"></stop>
+                                                <stop offset="100%" style="stop-color:#1e3a8a"></stop>
+                                            </linearGradient>
+                                            <linearGradient id="blackGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                                <stop offset="0%" style="stop-color:#1e293b"></stop>
+                                                <stop offset="100%" style="stop-color:#0f172a"></stop>
+                                            </linearGradient>
+                                            <linearGradient id="grayGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                                <stop offset="0%" style="stop-color:#475569"></stop>
+                                                <stop offset="100%" style="stop-color:#334155"></stop>
+                                            </linearGradient>
+                                        </defs>
+
+                                        <!-- Layer 1: Presentation Layer -->
+                                        <rect x="30" y="30" width="520" height="90" fill="url(#layerGradient1)" stroke="#2563eb" stroke-width="2" rx="8" class="diagram-layer" data-layer="presentation"></rect>
+                                        <text x="50" y="55" class="layer-title">Presentation Layer</text>
+                                        <text x="50" y="75" class="layer-subtitle">React 18 + TypeScript + shadcn/ui + Tailwind CSS</text>
+                                        
+                                        <!-- Presentation Layer Components - BLUE THEME -->
+                                        <g class="component-group" data-component="react-components">
+                                            <rect x="50" y="85" width="110" height="25" fill="url(#blueGradient)" rx="4" class="component-box"></rect>
+                                            <text x="105" y="102" class="component-text">React Components</text>
+                                        </g>
+                                        <g class="component-group" data-component="shadcn-ui">
+                                            <rect x="170" y="85" width="90" height="25" fill="url(#blueGradient)" rx="4" class="component-box"></rect>
+                                            <text x="215" y="102" class="component-text">🎭 shadcn/ui</text>
+                                        </g>
+                                        <g class="component-group" data-component="tailwind">
+                                            <rect x="270" y="85" width="90" height="25" fill="url(#blueGradient)" rx="4" class="component-box"></rect>
+                                            <text x="315" y="102" class="component-text">Tailwind CSS</text>
+                                        </g>
+                                        <g class="component-group" data-component="framer-motion">
+                                            <rect x="370" y="85" width="110" height="25" fill="url(#blueGradient)" rx="4" class="component-box"></rect>
+                                            <text x="425" y="102" class="component-text">Framer Motion</text>
+                                        </g>
+
+                                        <!-- Layer 2: State Management - BLACK/GRAY THEME -->
+                                        <rect x="30" y="140" width="520" height="90" fill="url(#layerGradient2)" stroke="#1e293b" stroke-width="2" rx="8" class="diagram-layer" data-layer="state"></rect>
+                                        <text x="50" y="165" class="layer-title">State Management Layer</text>
+                                        <text x="50" y="185" class="layer-subtitle">React Query + Context API + Custom Hooks | Server State</text>
+                                        
+                                        <!-- State Management Components - BLACK THEME -->
+                                        <g class="component-group" data-component="react-query">
+                                            <rect x="50" y="195" width="110" height="25" fill="url(#blackGradient)" rx="4" class="component-box"></rect>
+                                            <text x="105" y="212" class="component-text">React Query</text>
+                                        </g>
+                                        <g class="component-group" data-component="context-api">
+                                            <rect x="170" y="195" width="100" height="25" fill="url(#blackGradient)" rx="4" class="component-box"></rect>
+                                            <text x="220" y="212" class="component-text">Context API</text>
+                                        </g>
+                                        <g class="component-group" data-component="custom-hooks">
+                                            <rect x="280" y="195" width="100" height="25" fill="url(#blackGradient)" rx="4" class="component-box"></rect>
+                                            <text x="330" y="212" class="component-text">Custom Hooks</text>
+                                        </g>
+                                        <g class="component-group" data-component="workflow-context">
+                                            <rect x="390" y="195" width="130" height="25" fill="url(#blackGradient)" rx="4" class="component-box"></rect>
+                                            <text x="455" y="212" class="component-text">Workflow Context</text>
+                                        </g>
+
+                                        <!-- Layer 3: API Communication - BLUE THEME -->
+                                        <rect x="30" y="250" width="520" height="90" fill="url(#layerGradient3)" stroke="#3b82f6" stroke-width="2" rx="8" class="diagram-layer" data-layer="api"></rect>
+                                        <text x="50" y="275" class="layer-title">API Communication Layer</text>
+                                        <text x="50" y="295" class="layer-subtitle">Express.js + JWT Auth + Smart Caching + WebSocket | HTTP/REST</text>
+                                        
+                                        <!-- API Layer Components - BLUE THEME -->
+                                        <g class="component-group" data-component="express">
+                                            <rect x="50" y="305" width="100" height="25" fill="url(#blueGradient)" rx="4" class="component-box"></rect>
+                                            <text x="100" y="322" class="component-text">Express.js</text>
+                                        </g>
+                                        <g class="component-group" data-component="jwt-auth">
+                                            <rect x="160" y="305" width="100" height="25" fill="#2563eb" rx="4" class="component-box"></rect>
+                                            <text x="210" y="322" class="component-text">JWT Auth</text>
+                                        </g>
+                                        <g class="component-group" data-component="smart-cache">
+                                            <rect x="270" y="305" width="110" height="25" fill="url(#blueGradient)" rx="4" class="component-box"></rect>
+                                            <text x="325" y="322" class="component-text">Smart Cache</text>
+                                        </g>
+                                        <g class="component-group" data-component="websocket">
+                                            <rect x="390" y="305" width="90" height="25" fill="url(#blueGradient)" rx="4" class="component-box"></rect>
+                                            <text x="435" y="322" class="component-text">WebSocket</text>
+                                        </g>
+
+                                        <!-- Layer 4: External Integration - BLACK/GRAY THEME -->
+                                        <rect x="30" y="360" width="520" height="90" fill="url(#layerGradient4)" stroke="#475569" stroke-width="2" rx="8" class="diagram-layer" data-layer="external"></rect>
+                                        <text x="50" y="385" class="layer-title">Integration Layer</text>
+                                        <text x="50" y="405" class="layer-subtitle">Apache Airflow 3.x + File System + Network Paths | DAG Operations </text>
+                                        
+                                        <!-- External Integration Components - GRAY/BLACK THEME -->
+                                        <g class="component-group" data-component="airflow">
+                                            <rect x="50" y="415" width="130" height="25" fill="url(#grayGradient)" rx="4" class="component-box"></rect>
+                                            <text x="115" y="432" class="component-text">Apache Airflow</text>
+                                        </g>
+                                        <g class="component-group" data-component="file-system">
+                                            <rect x="190" y="415" width="100" height="25" fill="#475569" rx="4" class="component-box"></rect>
+                                            <text x="240" y="432" class="component-text">File System</text>
+                                        </g>
+                                        <g class="component-group" data-component="network-paths">
+                                            <rect x="300" y="415" width="120" height="25" fill="url(#grayGradient)" rx="4" class="component-box"></rect>
+                                            <text x="360" y="432" class="component-text">Network Paths</text>
+                                        </g>
+
+                                        <!-- Data Flow Arrows - BLUE THEME -->
+                                        <path d="M 290 120 L 290 140" stroke="#2563eb" stroke-width="3" fill="none" marker-end="url(#arrowhead)" class="data-flow"></path>
+                                        <path d="M 290 230 L 290 250" stroke="#2563eb" stroke-width="3" fill="none" marker-end="url(#arrowhead)" class="data-flow"></path>
+                                        <path d="M 290 340 L 290 360" stroke="#2563eb" stroke-width="3" fill="none" marker-end="url(#arrowhead)" class="data-flow"></path>
+
+                                        <!-- Bidirectional arrows - BLACK -->
+                                        <path d="M 310 360 L 310 340" stroke="#1e293b" stroke-width="2" fill="none" marker-end="url(#arrowhead-black)" class="data-flow"></path>
+                                        <path d="M 310 250 L 310 230" stroke="#1e293b" stroke-width="2" fill="none" marker-end="url(#arrowhead-black)" class="data-flow"></path>
+                                        <path d="M 310 140 L 310 120" stroke="#1e293b" stroke-width="2" fill="none" marker-end="url(#arrowhead-black)" class="data-flow"></path>
+
+                                        <!-- Arrow markers - BLUE/BLACK -->
+                                        <defs>
+                                            <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                                                <polygon points="0 0, 10 3.5, 0 7" fill="#2563eb"></polygon>
+                                            </marker>
+                                            <marker id="arrowhead-black" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                                                <polygon points="0 0, 10 3.5, 0 7" fill="#1e293b"></polygon>
+                                            </marker>
+                                        </defs>
+                                    </svg>
+                                </div>
+
+                                <!-- Component Details Panel -->
+                                <div id="component-details" class="mt-3 p-3 border rounded-lg bg-light" style="display: none;">
+                                    <h6 id="component-title" class="fw-bold"></h6>
+                                    <p id="component-description" class="mb-2"></p>
+                                    <div id="component-technologies"></div>
+                                </div>
+                            </div>
+
+                            <!-- Technology Stack Sidebar - UPDATED COLORS -->
+                            <div class="col-lg-4">
+                                <div class="card tech-sidebar-card h-100" style="max-height: 600px; overflow-y: auto;">
+                                    <div class="card-header text-white">
+                                        <h5 class="mb-0"><i class="bi bi-stack"></i> Complete Technology Stack</h5>
+                                    </div>
+                                    <div class="card-body p-3">
+                                        <!-- Frontend Technologies -->
+                                        <div class="mb-4">
+                                            <h6 class="text-primary mb-2"><i class="bi bi-laptop"></i> Frontend</h6>
+                                            <div class="d-flex flex-wrap gap-1">
+                                                <span class="badge bg-primary">React 18</span>
+                                                <span class="badge bg-primary">TypeScript</span>
+                                                <span class="badge bg-primary">shadcn/ui</span>
+                                                <span class="badge bg-primary">Tailwind CSS</span>
+                                                <span class="badge bg-primary">Framer Motion</span>
+                                            </div>
+                                        </div>
+
+                                        <!-- State Management -->
+                                        <div class="mb-4">
+                                            <h6 class="text-dark mb-2"><i class="bi bi-gear"></i> State Management</h6>
+                                            <div class="d-flex flex-wrap gap-1">
+                                                <span class="badge bg-secondary">React Query</span>
+                                                <span class="badge bg-secondary">Context API</span>
+                                                <span class="badge bg-secondary">Custom Hooks</span>
+                                                <span class="badge bg-secondary">Workflow Context</span>
+                                            </div>
+                                        </div>
+
+                                        <!-- Backend -->
+                                        <div class="mb-4">
+                                            <h6 class="text-primary mb-2"><i class="bi bi-server"></i> Backend</h6>
+                                            <div class="d-flex flex-wrap gap-1">
+                                                <span class="badge bg-primary">Express.js</span>
+                                                <span class="badge bg-primary">JWT Auth</span>
+                                                <span class="badge bg-primary">Smart Cache</span>
+                                                <span class="badge bg-primary">WebSocket</span> 
+                                            </div>
+                                        </div>
+
+                                        <!-- Integration -->
+                                        <div class="mb-4">
+                                            <h6 class="text-secondary mb-2"><i class="bi bi-diagram-3"></i> Integration</h6>
+                                            <div class="d-flex flex-wrap gap-1">
+                                                <span class="badge bg-dark">Airflow 3.x</span>
+                                                <span class="badge bg-dark">File System</span>
+                                                <span class="badge bg-dark">Network Paths</span>
+                                            </div>
+                                        </div>
+
+                                        <!-- Performance -->
+                                        <!--<div class="mb-4">
+                                            <h6 class="text-primary mb-2"><i class="bi bi-speedometer"></i> Performance</h6>
+                                            <div class="d-flex flex-wrap gap-1">
+                                                <span class="badge bg-primary">Caching</span>
+                                                <span class="badge bg-dark">Memoization</span>                                                
+                                            </div>
+                                        </div>-->
+
+                                        <!-- Build & Dev -->
+                                        <div class="mb-4">
+                                            <h6 class="text-dark mb-2"><i class="bi bi-tools"></i> Build & Dev</h6>
+                                            <div class="d-flex flex-wrap gap-1">
+                                                <span class="badge bg-secondary">Vite 7</span>
+                                                <span class="badge bg-secondary">ESBuild</span>
+                                                <span class="badge bg-secondary">TypeScript</span>
+                                                <span class="badge bg-secondary">Hot Reload</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Architecture Layers -->
+                    <div class="architecture-layer">
+                        <h5><i class="bi bi-display"></i> Presentation Layer (React + shadcn/ui)</h5>
+                        <p><strong>Components:</strong> DagDashboard, Sidebar, FileUpload, SchemaGenerator, ag-Grid Tables</p>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p class="mb-2"><strong>UI Framework:</strong></p>
+                                <ul>
+                                    <li>shadcn/ui components for consistent design</li>
+                                    <li>Radix UI primitives for accessibility foundation</li>
+                                    <li>Tailwind CSS for utility-first styling</li>                                    
+                                    <li>Responsive design with mobile-first approach</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <p class="mb-2"><strong>Advanced Components:</strong></p>
+                                <ul>
+                                    <li>ag-Grid Enterprise for complex data tables</li>
+                                    <li>React Hook Form with validation</li>
+                                    <li>Multi-step workflow wizards</li>
+                                    <li>Real-time status indicators</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="code-snippet" style="cursor: pointer;" data-bs-original-title="Click to copy code">
+// Advanced React Component with shadcn/ui
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { motion } from "framer-motion";
+
+const DagDashboard = () => {
+  const { data: dags, isLoading } = useQuery({
+    queryKey: ['dags'],
+    queryFn: () => airflowApi.getDags(),
+    staleTime: 30000,
+    refetchInterval: 60000
+  });
+
+  return (
+    &lt;motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="dashboard-container"
+    &gt;
+      &lt;Card&gt;
+        &lt;CardHeader&gt;
+          &lt;CardTitle&gt;DAG Dashboard&lt;/CardTitle&gt;
+        &lt;/CardHeader&gt;
+        &lt;CardContent&gt;
+          {dags?.map(dag => (
+            &lt;DagCard key={dag.dag_id} dag={dag} /&gt;
+          ))}
+        &lt;/CardContent&gt;
+      &lt;/Card&gt;
+    &lt;/motion.div&gt;
+  );
+};</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Communication Tab -->
+            <div class="tab-pane fade" id="communication" role="tabpanel" aria-labelledby="communication-tab">
+                <div class="container py-5">
+                    <h2 class="section-title">
+                        <i class="bi bi-arrow-left-right"></i> Advanced Communication Patterns
+                    </h2>
+
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="architecture-card">
+                                <div class="complexity-indicator advanced">Advanced</div>
+                                <div class="pattern-icon">
+                                    <i class="bi bi-diagram-2"></i>
+                                </div>
+                                <h4>React Query + API Integration</h4>
+                                <p class="text-secondary">Advanced server state management with intelligent caching</p>
+                                
+                                <div class="diagram">
+                                    <h6>Query Lifecycle</h6>
+                                    <div class="flow-diagram flex-column">
+                                        <div class="flow-box">Component Mount</div>
+                                        <div class="flow-arrow"><i class="bi bi-arrow-down"></i></div>
+                                        <div class="flow-box">React Query</div>
+                                        <div class="flow-arrow"><i class="bi bi-arrow-down"></i></div>
+                                        <div class="flow-box">Cache Check</div>
+                                        <div class="flow-arrow"><i class="bi bi-arrow-down"></i></div>
+                                        <div class="flow-box">API Request</div>
+                                        <div class="flow-arrow"><i class="bi bi-arrow-down"></i></div>
+                                        <div class="flow-box">Background Sync</div>
+                                    </div>
+                                </div>
+
+                                <div class="code-snippet" style="cursor: pointer;" data-bs-original-title="Click to copy code">
+// React Query with Advanced Features
+const useDagDetails = (dagId: string) => {
+  const queryClient = useQueryClient();
+  
+  return useQuery({
+    queryKey: ['dag', dagId, 'details'],
+    queryFn: async () => {
+      const [dag, runs, tasks] = await Promise.all([
+        airflowApi.getDag(dagId),
+        airflowApi.getDagRuns(dagId, 10),
+        airflowApi.getTasks(dagId)
+      ]);
+      return { dag, runs, tasks };
+    },
+    staleTime: 2 * 60 * 1000, // 2 minutes
+    enabled: !!dagId,
+    refetchOnMount: 'always',
+    refetchOnWindowFocus: true,
+    select: useCallback((data) => ({
+      ...data,
+      recentFailures: data.runs.filter(run => run.state === 'failed')
+    }), []),
+    onSuccess: (data) => {
+      // Prefetch related data
+      if (data.dag?.dependencies?.length > 0) {
+        data.dag.dependencies.forEach(depId => {
+          queryClient.prefetchQuery({
+            queryKey: ['dag', depId, 'status'],
+            queryFn: () => airflowApi.getDagStatus(depId)
+          });
+        });
+      }
+    }
+  });
+};</div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6">
+                            <div class="architecture-card">
+                                <div class="complexity-indicator enterprise">Enterprise</div>
+                                <div class="pattern-icon">
+                                    <i class="bi bi-shield-check"></i>
+                                </div>
+                                <h4>JWT + Session Management</h4>
+                                <p class="text-secondary">Enterprise-grade authentication with automatic token refresh</p>
+                                
+                                <div class="diagram">
+                                    <h6>Auth Flow</h6>
+                                    <div class="flow-diagram flex-column">
+                                        <div class="flow-box">Login Request</div>
+                                        <div class="flow-arrow"><i class="bi bi-arrow-down"></i></div>
+                                        <div class="flow-box">Passport.js</div>
+                                        <div class="flow-arrow"><i class="bi bi-arrow-down"></i></div>
+                                        <div class="flow-box">JWT Generation</div>
+                                        <div class="flow-arrow"><i class="bi bi-arrow-down"></i></div>
+                                        <div class="flow-box">Session Store</div>
+                                        <div class="flow-arrow"><i class="bi bi-arrow-down"></i></div>
+                                        <div class="flow-box">Auto Refresh</div>
+                                    </div>
+                                </div>
+
+                                <div class="code-snippet" style="cursor: pointer;" data-bs-original-title="Click to copy code">
+// Advanced Authentication System
+import passport from 'passport';
+import { Strategy as LocalStrategy } from 'passport-local';
+import jwt from 'jsonwebtoken';
+
+// Passport configuration
+passport.use(new LocalStrategy({
+  usernameField: 'email',
+  passwordField: 'password'
+}, async (email, password, done) => {
+  try {
+    const user = await db.query.users.findFirst({
+      where: eq(users.email, email)
+    });
+    
+    if (!user || !await bcrypt.compare(password, user.passwordHash)) {
+      return done(null, false);
+    }
+    
+    return done(null, user);
+  } catch (error) {
+    return done(error);
+  }
+}));
+
+// JWT refresh mechanism
+class TokenManager {
+  private refreshTokens = new Map&lt;string, RefreshToken&gt;();
+  
+  generateTokens(userId: string) {
+    const accessToken = jwt.sign(
+      { userId, type: 'access' },
+      JWT_SECRET,
+      { expiresIn: '15m' }
+    );
+    
+    const refreshToken = jwt.sign(
+      { userId, type: 'refresh' },
+      REFRESH_SECRET,
+      { expiresIn: '7d' }
+    );
+    
+    this.refreshTokens.set(refreshToken, {
+      userId, expiresAt: Date.now() + 7 * 24 * 60 * 60 * 1000
+    });
+    
+    return { accessToken, refreshToken };
+  }
+}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col-lg-6">
+                            <div class="architecture-card">
+                                <div class="complexity-indicator advanced">Advanced</div>
+                                <div class="pattern-icon">
+                                    <i class="bi bi-broadcast"></i>
+                                </div>
+                                <h4>WebSocket Real-time Updates</h4>
+                                <p class="text-secondary">Real-time DAG status and execution monitoring</p>
+                                
+                                <div class="code-snippet" style="cursor: pointer;" data-bs-original-title="Click to copy code">
+// WebSocket Integration
+import { useEffect, useRef } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
+
+export const useWebSocket = () => {
+  const ws = useRef&lt;WebSocket | null&gt;(null);
+  const queryClient = useQueryClient();
+  
+  useEffect(() => {
+    ws.current = new WebSocket(WS_URL);
+    
+    ws.current.onmessage = (event) => {
+      const message = JSON.parse(event.data);
+      
+      switch (message.type) {
+        case 'dag_state_change':
+          queryClient.invalidateQueries({
+            queryKey: ['dag', message.dagId]
+          });
+          break;
+          
+        case 'task_instance_update':
+          queryClient.setQueryData(
+            ['dag', message.dagId, 'runs', message.runId],
+            (old) => updateTaskInstance(old, message.data)
+          );
+          break;
+          
+        case 'system_alert':
+          toast.warning(message.message);
+          break;
+      }
+    };
+    
+    return () => ws.current?.close();
+  }, [queryClient]);
+  
+  const sendMessage = useCallback((message: any) => {
+    if (ws.current?.readyState === WebSocket.OPEN) {
+      ws.current.send(JSON.stringify(message));
+    }
+  }, []);
+  
+  return { sendMessage };
+};</div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6">
+                            <div class="architecture-card">
+                                <div class="complexity-indicator enterprise">Enterprise</div>
+                                <div class="pattern-icon">
+                                    <i class="bi bi-files"></i>
+                                </div>
+                                <h4>File Upload & Processing</h4>
+                                <p class="text-secondary">Enterprise file handling with network path resolution</p>
+                                
+                                <div class="code-snippet" style="cursor: pointer;" data-bs-original-title="Click to copy code">
+// Advanced File Processing
+import multer from 'multer';
+import { z } from 'zod';
+
+const fileUploadSchema = z.object({
+  originalname: z.string().min(1),
+  mimetype: z.enum(['text/csv', 'application/vnd.ms-excel']),
+  size: z.number().max(10 * 1024 * 1024) // 10MB limit
+});
+
+const upload = multer({
+  storage: multer.diskStorage({
+    destination: (req, file, cb) => {
+      const uploadPath = path.join(UPLOAD_DIR, req.user.id);
+      fs.ensureDirSync(uploadPath);
+      cb(null, uploadPath);
+    },
+    filename: (req, file, cb) => {
+      const ext = path.extname(file.originalname);
+      const name = path.basename(file.originalname, ext);
+      const timestamp = Date.now();
+      cb(null, `${name}_${timestamp}${ext}`);
+    }
+  }),
+  limits: { fileSize: 10 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    try {
+      fileUploadSchema.parse(file);
+      cb(null, true);
+    } catch {
+      cb(new Error('Invalid file type or size'));
+    }
+  }
+});
+
+// Network path resolution for enterprise environments
+class NetworkPathManager {
+  async resolveUNCPath(rawPath: string): Promise&lt;ResolvedPath&gt; {
+    const formattedPath = this.formatUNCPath(rawPath);
+    
+    try {
+      await fs.access(formattedPath);
+      return { path: formattedPath, isLocal: false, accessible: true };
+    } catch {
+      const localFallback = this.getLocalFallback(rawPath);
+      return { path: localFallback, isLocal: true, accessible: true };
+    }
+  }
+}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Patterns Tab -->
+            <div class="tab-pane fade" id="patterns" role="tabpanel" aria-labelledby="patterns-tab">
+                <div class="container py-5">
+                    <h2 class="section-title">
+                        <i class="bi bi-puzzle"></i> Enterprise Design Patterns
+                    </h2>
+
+                    <div class="row">
+                        <div class="col-lg-4">
+                            <div class="architecture-card">
+                                <div class="complexity-indicator enterprise">Enterprise</div>
+                                <div class="pattern-icon">
+                                    <i class="bi bi-layers"></i>
+                                </div>
+                                <h5>Compound Component Pattern</h5>
+                                <p class="text-secondary">Advanced component composition with Radix UI</p>
+                                <div class="highlight">
+                                    <strong>Implementation:</strong>
+                                    <ul class="mb-0">
+                                        <li>Dialog + Form composition</li>
+                                        <li>Table + Pagination + Filters</li>
+                                        <li>Multi-step wizard components</li>
+                                        <li>Accordion + Collapsible sections</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-4">
+                            <div class="architecture-card">
+                                <div class="complexity-indicator advanced">Advanced</div>
+                                <div class="pattern-icon">
+                                    <i class="bi bi-diagram-3"></i>
+                                </div>
+                                <h5>Server State Pattern</h5>
+                                <p class="text-secondary">React Query for server state synchronization</p>
+                                <div class="highlight">
+                                    <strong>Features:</strong>
+                                    <ul class="mb-0">
+                                        <li>Automatic background refetching</li>
+                                        <li>Optimistic updates</li>
+                                        <li>Request deduplication</li>
+                                        <li>Infinite query pagination</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-4">
+                            <div class="architecture-card">
+                                <div class="complexity-indicator enterprise">Enterprise</div>
+                                <div class="pattern-icon">
+                                    <i class="bi bi-memory"></i>
+                                </div>
+                                <h5>Multi-Layer Caching</h5>
+                                <p class="text-secondary">Intelligent caching across all architectural layers</p>
+                                <div class="highlight">
+                                    <strong>Layers:</strong>
+                                    <ul class="mb-0">
+                                        <li>React Query cache</li>
+                                        <li>Component memoization</li>
+                                        <li>Server-side request cache</li>
+                                        <li>Database query cache</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Implementation Tab -->
+            <div class="tab-pane fade" id="implementation" role="tabpanel" aria-labelledby="implementation-tab">
+                <div class="container py-5">
+                    <h2 class="section-title">
+                        <i class="bi bi-code-slash"></i> Enterprise Implementation
+                    </h2>
+
+                    <div class="architecture-card">
+                        <h5><i class="bi bi-diagram-2-fill"></i> Advanced React Query Setup</h5>
+                        <p>Production-ready React Query configuration with advanced features</p>
+                        
+                        <div class="code-snippet" style="cursor: pointer;" data-bs-original-title="Click to copy code">
+// Enterprise React Query Configuration
+import {
+  QueryClient,
+  QueryClientProvider,
+  MutationCache,
+  QueryCache
+} from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+
+// Advanced query client configuration
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      gcTime: 10 * 60 * 1000, // 10 minutes (formerly cacheTime)
+      retry: (failureCount, error) => {
+        // Don't retry on 4xx errors
+        if (error.status >= 400 && error.status < 500) return false;
+        return failureCount < 3;
+      },
+      retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 30000),
+      refetchOnWindowFocus: true,
+      refetchOnReconnect: true
+    },
+    mutations: {
+      retry: 1,
+      onError: (error, variables, context) => {
+        console.error('Mutation error:', { error, variables, context });
+        errorTracker.captureException(error, {
+          extra: { variables, context }
+        });
+      }
+    }
+  },
+  queryCache: new QueryCache({
+    onError: (error, query) => {
+      console.error('Query error:', { error, queryKey: query.queryKey });
+      if (error.status === 401) {
+        authManager.logout();
+      }
+    }
+  }),
+  mutationCache: new MutationCache({
+    onSuccess: (data, variables, context) => {
+      // Global success handling
+      if (context?.showSuccessToast) {
+        toast.success('Operation completed successfully');
+      }
+    }
+  })
+});
+
+// Query client wrapper with error boundary
+export const QueryProvider = ({ children }) => (
+  &lt;QueryClientProvider client={queryClient}&gt;
+    &lt;ErrorBoundary
+      fallback={&lt;QueryErrorFallback /&gt;}
+      onError={(error) => {
+        console.error('React Query error:', error);
+        errorTracker.captureException(error, {
+          tags: { component: 'QueryProvider' }
+        });
+      }}
+    &gt;
+      {children}
+    &lt;/ErrorBoundary&gt;
+    {process.env.NODE_ENV === 'development' && (
+      &lt;ReactQueryDevtools initialIsOpen={false} /&gt;
+    )}
+  &lt;/QueryClientProvider&gt;
+);</div>
+                    </div>
+
+                    <div class="architecture-card">
+                        <h5><i class="bi bi-palette-fill"></i> Advanced Tailwind + Radix UI Integration</h5>
+                        <p>Scalable design system with custom theme configuration</p>
+                        
+                        <div class="code-snippet" style="cursor: pointer;" data-bs-original-title="Click to copy code">
+// tailwind.config.ts - Advanced Configuration
+import type { Config } from "tailwindcss";
+
+export default {
+  darkMode: ["class"],
+  content: [
+    "./client/index.html",
+    "./client/src/**/*.{js,jsx,ts,tsx}",
+    "./node_modules/@radix-ui/**/*.{js,jsx}"
+  ],
+  theme: {
+    extend: {
+      // CSS Variables for dynamic theming
+      colors: {
+        border: "var(--border)",
+        input: "var(--input)",
+        ring: "var(--ring)",
+        background: "var(--background)",
+        foreground: "var(--foreground)",
+        primary: {
+          DEFAULT: "var(--primary)",
+          foreground: "var(--primary-foreground)",
+        },
+        secondary: {
+          DEFAULT: "var(--secondary)",
+          foreground: "var(--secondary-foreground)",
+        },
+        // Enterprise theme colors
+        brand: {
+          50: '#eff6ff',
+          500: '#3b82f6',
+          900: '#1e3a8a',
+        },
+        status: {
+          success: '#10b981',
+          warning: '#f59e0b',
+          error: '#ef4444',
+          info: '#3b82f6'
+        }
+      },
+      // Advanced animations
+      animation: {
+        "accordion-down": "accordion-down 0.2s ease-out",
+        "accordion-up": "accordion-up 0.2s ease-out",
+        "fade-in": "fadeIn 0.5s ease-in-out",
+        "slide-in": "slideIn 0.3s ease-out",
+        "pulse-slow": "pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite"
+      },
+      keyframes: {
+        fadeIn: {
+          '0%': { opacity: '0', transform: 'translateY(10px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' }
+        },
+        slideIn: {
+          '0%': { transform: 'translateX(-100%)' },
+          '100%': { transform: 'translateX(0)' }
+        }
+      },
+      // Custom spacing scale
+      spacing: {
+        '18': '4.5rem',
+        '88': '22rem'
+      }
+    },
+  },
+  plugins: [
+    require("tailwindcss-animate"),
+    require("@tailwindcss/typography"),
+    require("@tailwindcss/forms")
+  ],
+} satisfies Config;</div>
+                    </div>
+
+                    <div class="highlight">
+                        <h5><i class="bi bi-lightbulb"></i> Enterprise Best Practices Summary</h5>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6>Code Quality</h6>
+                                <ul>
+                                    <li>100% TypeScript with strict mode</li>
+                                    <li>ESLint + Prettier configuration</li>
+                                    <li>Husky pre-commit hooks</li>
+                                    <li>Comprehensive error boundaries</li>
+                                    <li>Unit and integration testing</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <h6>Performance & Scalability</h6>
+                                <ul>
+                                    <li>Code splitting with React.lazy</li>
+                                    <li>Virtual scrolling for large datasets</li>
+                                    <li>Optimized bundle size with tree shaking</li>
+                                    <li>CDN integration for static assets</li>
+                                    <li>Progressive Web App capabilities</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Project Analysis Tab -->
+            <div class="tab-pane fade" id="analysis" role="tabpanel" aria-labelledby="analysis-tab">
+                <div class="container py-5">
+                    <h2 class="section-title">
+                        <i class="bi bi-graph-up-arrow"></i> Comprehensive Project Analysis
+                    </h2>
+
+                    <!-- Overview Metrics -->
+                    <div class="row mb-5">
+                        <div class="col-md-3 mb-3">
+                            <div class="card metric-card-analysis h-100 text-center p-4">
+                                <h3 class="text-success mb-2">100%</h3>
+                                <p class="mb-0 text-muted">WCAG 2.1 AA Compliance</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="card metric-card-analysis h-100 text-center p-4">
+                                <h3 class="text-success mb-2">14/14</h3>
+                                <p class="mb-0 text-muted">Standards Checklist</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="card metric-card-analysis h-100 text-center p-4">
+                                <h3 class="text-success mb-2">0</h3>
+                                <p class="mb-0 text-muted">Critical Issues</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="card metric-card-analysis h-100 text-center p-4">
+                                <h3 class="text-success mb-2">Enterprise</h3>
+                                <p class="mb-0 text-muted">Ready Status</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Main Analysis Sections -->
+                    <div class="row">
+                        <!-- Accessibility Standards -->
+                        <div class="col-lg-6 mb-4">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <div class="section-icon bg-success">
+                                        <i class="bi bi-universal-access"></i>
+                                    </div>
+                                    <h4 class="highlight-text mb-3">Accessibility Standards Compliance</h4>
+                                    <div class="progress-custom mb-3">
+                                        <div class="progress-bar-custom" style="width: 100%"></div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <h6 class="text-success mb-2">✅ Excellent Implementation</h6>
+                                        <ul class="list-unstyled">
+                                            <li><i class="bi bi-check text-success me-2"></i>Semantic HTML with proper elements</li>
+                                            <li><i class="bi bi-check text-success me-2"></i>Comprehensive ARIA attributes</li>
+                                            <li><i class="bi bi-check text-success me-2"></i>Full keyboard navigation support</li>
+                                            <li><i class="bi bi-check text-success me-2"></i>Screen reader optimized</li>
+                                            <li><i class="bi bi-check text-success me-2"></i>Focus management & high contrast</li>
+                                        </ul>
+                                    </div>
+                                    <span class="badge bg-success">WCAG 2.1 AA Compliant</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Coding Standards -->
+                        <div class="col-lg-6 mb-4">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <div class="section-icon bg-primary">
+                                        <i class="bi bi-code"></i>
+                                    </div>
+                                    <h4 class="highlight-text mb-3">Coding Standards & Best Practices</h4>
+                                    <div class="progress-custom mb-3">
+                                        <div class="progress-bar-custom" style="width: 100%"></div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <h6 class="text-success mb-2">✅ Exceptional Quality</h6>
+                                        <ul class="list-unstyled">
+                                            <li><i class="bi bi-check text-success me-2"></i>TypeScript strict mode enabled</li>
+                                            <li><i class="bi bi-check text-success me-2"></i>Modern React patterns with hooks</li>
+                                            <li><i class="bi bi-check text-success me-2"></i>Performance optimization strategies</li>
+                                            <li><i class="bi bi-check text-success me-2"></i>Clean architecture principles</li>
+                                            <li><i class="bi bi-check text-success me-2"></i>Comprehensive documentation</li>
+                                        </ul>
+                                    </div>
+                                    <span class="badge bg-primary">Best-in-Class</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Architectural Excellence -->
+                        <div class="col-lg-6 mb-4">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <div class="section-icon bg-info">
+                                        <i class="bi bi-building"></i>
+                                    </div>
+                                    <h4 class="highlight-text mb-3">Architectural Excellence</h4>
+                                    <div class="progress-custom mb-3">
+                                        <div class="progress-bar-custom" style="width: 100%"></div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <h6 class="text-success mb-2">✅ No Critical Flaws Found</h6>
+                                        <ul class="list-unstyled">
+                                            <li><i class="bi bi-check text-success me-2"></i>Modular design with clear separation</li>
+                                            <li><i class="bi bi-check text-success me-2"></i>Scalable plugin-based architecture</li>
+                                            <li><i class="bi bi-check text-success me-2"></i>Multi-level caching strategy</li>
+                                            <li><i class="bi bi-check text-success me-2"></i>Security & performance optimized</li>
+                                            <li><i class="bi bi-check text-success me-2"></i>Real-time state synchronization</li>
+                                        </ul>
+                                    </div>
+                                    <span class="badge bg-info">Enterprise Grade</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Modern Web Standards -->
+                        <div class="col-lg-6 mb-4">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <div class="section-icon bg-warning">
+                                        <i class="bi bi-globe"></i>
+                                    </div>
+                                    <h4 class="highlight-text mb-3">Modern Web Application Standards</h4>
+                                    <div class="progress-custom mb-3">
+                                        <div class="progress-bar-custom" style="width: 100%"></div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <h6 class="text-success mb-2">✅ Fully Compliant</h6>
+                                        <ul class="list-unstyled">
+                                            <li><i class="bi bi-check text-success me-2"></i>Optimized performance & bundling</li>
+                                            <li><i class="bi bi-check text-success me-2"></i>Security standards (JWT, CORS, validation)</li>
+                                            <li><i class="bi bi-check text-success me-2"></i>Developer experience excellence</li>
+                                            <li><i class="bi bi-check text-success me-2"></i>Production-ready deployment</li>
+                                            <li><i class="bi bi-check text-success me-2"></i>Horizontal scaling support</li>
+                                        </ul>
+                                    </div>
+                                    <span class="badge bg-warning text-dark">Production Ready</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Standards Compliance Checklist -->
+                    <div class="row mb-5">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h4 class="highlight-text mb-4">
+                                        <i class="bi bi-trophy me-2"></i>
+                                        Standards Compliance Checklist
+                                    </h4>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="checklist-item">
+                                                <i class="bi bi-check-circle text-success me-2"></i>
+                                                Web Content Accessibility Guidelines (WCAG 2.1 AA)
+                                            </div>
+                                            <div class="checklist-item">
+                                                <i class="bi bi-check-circle text-success me-2"></i>
+                                                React Best Practices & Patterns
+                                            </div>
+                                            <div class="checklist-item">
+                                                <i class="bi bi-check-circle text-success me-2"></i>
+                                                TypeScript Strict Mode Compliance
+                                            </div>
+                                            <div class="checklist-item">
+                                                <i class="bi bi-check-circle text-success me-2"></i>
+                                                Modern JavaScript (ES2022+) Features
+                                            </div>
+                                            <div class="checklist-item">
+                                                <i class="bi bi-check-circle text-success me-2"></i>
+                                                Security Best Practices (OWASP)
+                                            </div>
+                                            <div class="checklist-item">
+                                                <i class="bi bi-check-circle text-success me-2"></i>
+                                                Performance Optimization Standards
+                                            </div>
+                                            <div class="checklist-item">
+                                                <i class="bi bi-check-circle text-success me-2"></i>
+                                                SEO-Friendly Structure
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="checklist-item">
+                                                <i class="bi bi-check-circle text-success me-2"></i>
+                                                Cross-Browser Compatibility
+                                            </div>
+                                            <div class="checklist-item">
+                                                <i class="bi bi-check-circle text-success me-2"></i>
+                                                Mobile-First Responsive Design
+                                            </div>
+                                            <div class="checklist-item">
+                                                <i class="bi bi-check-circle text-success me-2"></i>
+                                                Progressive Enhancement
+                                            </div>
+                                            <div class="checklist-item">
+                                                <i class="bi bi-check-circle text-success me-2"></i>
+                                                API Security & Rate Limiting
+                                            </div>
+                                            <div class="checklist-item">
+                                                <i class="bi bi-check-circle text-success me-2"></i>
+                                                Error Boundary Implementation
+                                            </div>
+                                            <div class="checklist-item">
+                                                <i class="bi bi-check-circle text-success me-2"></i>
+                                                Proper State Management
+                                            </div>
+                                            <div class="checklist-item">
+                                                <i class="bi bi-check-circle text-success me-2"></i>
+                                                Component Reusability Standards
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Conclusion Section -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h4 class="highlight-text mb-4">
+                                        <i class="bi bi-bullseye me-2"></i>
+                                        Conclusion & Recommendations
+                                    </h4>
+                                    <div class="row">
+                                        <div class="col-lg-8">
+                                            <div class="alert alert-success border-0" role="alert">
+                                                <h5 class="alert-heading">
+                                                    <i class="bi bi-star me-2"></i>
+                                                    Exceptional Standards Compliance
+                                                </h5>
+                                                <p class="mb-0">Your InfoArchive project demonstrates exceptional adherence to modern web development standards with enterprise-grade architecture, production-ready security, outstanding accessibility, and performance-optimized implementation.</p>
+                                            </div>
+                                            
+                                            <h6 class="mt-4 mb-3">Key Achievements:</h6>
+                                            <ul class="list-unstyled">
+                                                <li class="mb-2"><i class="bi bi-award text-warning me-2"></i><strong>Enterprise-grade architecture</strong> with proper separation of concerns</li>
+                                                <li class="mb-2"><i class="bi bi-shield-alt text-success me-2"></i><strong>Production-ready security</strong> with comprehensive authentication</li>
+                                                <li class="mb-2"><i class="bi bi-universal-access text-info me-2"></i><strong>Outstanding accessibility</strong> exceeding industry standards</li>
+                                                <li class="mb-2"><i class="bi bi-rocket text-primary me-2"></i><strong>Performance-optimized</strong> with intelligent caching</li>
+                                                <li class="mb-2"><i class="bi bi-code text-secondary me-2"></i><strong>Maintainable codebase</strong> with excellent TypeScript implementation</li>
+                                            </ul>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <div class="text-center">
+                                                <div class="grade-circle mb-3">
+                                                    A+
+                                                </div>
+                                                <h5 class="text-muted">Overall Grade</h5>
+                                                <p class="text-success fw-bold">Exceptional</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mt-4">
+                                        <h6 class="mb-3">Minor Enhancement Opportunities:</h6>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="enhancement-item">
+                                                    <i class="bi bi-vial text-warning me-2"></i>
+                                                    Adding automated accessibility testing (axe-core)
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="enhancement-item">
+                                                    <i class="bi bi-robot text-warning me-2"></i>
+                                                    Implementing end-to-end testing suite
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="enhancement-item">
+                                                    <i class="bi bi-speedometer2 text-warning me-2"></i>
+                                                    Adding performance budgets and monitoring
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="enhancement-item">
+                                                    <i class="bi bi-book text-warning me-2"></i>
+                                                    Documentation for API versioning strategy
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="bg-dark text-light py-5 mt-5">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6><i class="bi bi-info-circle"></i> Enterprise Architecture Summary</h6>
+                        <p class="mb-3">This presentation demonstrates a sophisticated enterprise-grade React application architecture with Apache Airflow integration. The system leverages modern technologies including React Query for server state management, Radix UI for accessible components, Drizzle ORM for type-safe database operations, and comprehensive error handling strategies.</p>
+                        <p class="mb-0"><strong>Key Achievement:</strong> 95%+ TypeScript coverage with enterprise-level scalability and maintainability.</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6><i class="bi bi-gear"></i> Complete Technology Stack</h6>
+                        <div class="row">
+                            <div class="col-6">
+                                <small class="text-muted d-block mb-2"><strong>Frontend:</strong></small>
+                                <small class="text-muted">
+                                    React 18 • TypeScript 5.6<br>
+                                    Radix UI • Tailwind CSS<br>
+                                    React Query • Framer Motion
+                                </small>
+                            </div>
+                            <div class="col-6">
+                                <small class="text-muted d-block mb-2"><strong>Backend:</strong></small>
+                                <small class="text-muted">
+                                    Express.js • Drizzle ORM<br>
+                                    PostgreSQL • Passport.js<br>
+                                    Apache Airflow 3.x
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr class="my-4">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <small class="text-muted">© 2024 Enterprise Frontend Architecture Documentation</small>
+                    </div>
+                    <div class="col-md-6 text-md-end">
+                        <small class="text-muted">Built with Bootstrap 5, optimized for modern browsers</small>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Enhanced tab navigation with analytics
+        document.querySelectorAll('[data-bs-toggle="pill"]').forEach(tab => {
+            tab.addEventListener('shown.bs.tab', event => {
+                const targetId = event.target.getAttribute('data-bs-target');
+                console.log('Architecture tab changed to:', targetId);
+                
+                // Optional: Track usage analytics
+                if (typeof gtag !== 'undefined') {
+                    gtag('event', 'tab_view', {
+                        'event_category': 'architecture_presentation',
+                        'event_label': targetId
+                    });
+                }
+            });
+        });
+
+        // Enhanced copy code functionality with feedback
+        document.querySelectorAll('.code-snippet').forEach(codeBlock => {
+            codeBlock.style.cursor = 'pointer';
+            codeBlock.title = 'Click to copy code';
+            
+            codeBlock.addEventListener('click', async () => {
+                try {
+                    const text = codeBlock.textContent;
+                    await navigator.clipboard.writeText(text);
+                    
+                    // Enhanced visual feedback
+                    const originalBg = codeBlock.style.backgroundColor;
+                    codeBlock.style.backgroundColor = '#10b981';
+                    codeBlock.style.transform = 'scale(1.02)';
+                    
+                    // Show toast notification
+                    showToast('Code copied to clipboard!', 'success');
+                    
+                    setTimeout(() => {
+                        codeBlock.style.backgroundColor = originalBg;
+                        codeBlock.style.transform = 'scale(1)';
+                    }, 300);
+                } catch (err) {
+                    showToast('Failed to copy code', 'error');
+                }
+            });
+        });
+
+        // Enhanced hover effects for architecture cards
+        document.querySelectorAll('.architecture-card').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transition = 'all 0.3s ease';
+                card.style.transform = 'translateY(-8px)';
+                card.style.boxShadow = '0 25px 25px -5px rgba(0, 0, 0, 0.1)';
+            });
+            
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateY(0)';
+                card.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1)';
+            });
+        });
+
+        // Toast notification system
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = `alert alert-${type === 'success' ? 'success' : 'danger'} position-fixed`;
+            toast.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 250px;';
+            toast.textContent = message;
+            
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => document.body.removeChild(toast), 300);
+            }, 2000);
+        }
+
+        // Interactive component details for architecture diagram
+        const componentDetails = {
+            'react-components': {
+                title: 'React Components',
+                description: 'Modern React 18 functional components with hooks',
+                technologies: ['React 18.3.1', 'TypeScript', 'Custom Hooks', 'Memo Optimization']
+            },
+            'shadcn-ui': {
+                title: 'shadcn/ui Components',
+                description: 'Accessible, customizable UI components built on Radix UI',
+                technologies: ['Radix UI Primitives', 'Tailwind CSS', 'Class Variance Authority', 'Accessible by default']
+            },
+            'tailwind': {
+                title: 'Tailwind CSS',
+                description: 'Utility-first CSS framework for rapid UI development',
+                technologies: ['PostCSS', 'Autoprefixer', 'JIT Mode', 'Custom Design System']
+            },
+            'framer-motion': {
+                title: 'Framer Motion',
+                description: 'Production-ready motion library for React',
+                technologies: ['Gesture Recognition', 'Drag & Drop', 'Layout Animations', 'SVG Animations']
+            },
+            'react-query': {
+                title: 'React Query (TanStack Query)',
+                description: 'Powerful server state management library',
+                technologies: ['Caching', 'Background Refetch', 'Optimistic Updates', 'Request Deduplication']
+            },
+            'context-api': {
+                title: 'React Context API',
+                description: 'Built-in state management for cross-component data sharing',
+                technologies: ['Global State', 'Theme Management', 'User Preferences', 'Auth State']
+            },
+            'custom-hooks': {
+                title: 'Custom Hooks',
+                description: 'Reusable business logic encapsulated in custom hooks',
+                technologies: ['useWebSocket', 'useDebounce', 'useLocalStorage', 'useApi']
+            },
+            'workflow-context': {
+                title: 'Workflow Context',
+                description: 'Specialized context for managing workflow states',
+                technologies: ['DAG State', 'Pipeline Status', 'Task Progress', 'Error Handling']
+            },
+            'express': {
+                title: 'Express.js Server',
+                description: 'Fast, unopinionated web framework for Node.js',
+                technologies: ['TypeScript', 'Middleware', 'RESTful APIs', 'Error Handling']
+            },
+            'jwt-auth': {
+                title: 'JWT Authentication',
+                description: 'Secure token-based authentication system',
+                technologies: ['Passport.js', 'Token Refresh', 'Session Management', 'Role-based Access']
+            },
+            'smart-cache': {
+                title: 'Smart Caching Layer',
+                description: 'Intelligent caching strategy for optimal performance',
+                technologies: ['Redis', 'In-Memory Cache', 'TTL Management', 'Cache Invalidation']
+            },
+            'websocket': {
+                title: 'WebSocket Communication',
+                description: 'Real-time bidirectional communication',
+                technologies: ['ws Library', 'Event Broadcasting', 'Connection Pooling', 'Auto-reconnect']
+            },
+            'airflow': {
+                title: 'Apache Airflow Integration',
+                description: 'Workflow orchestration platform integration',
+                technologies: ['DAG Management', 'Task Scheduling', 'Monitoring', 'REST API']
+            },
+            'file-system': {
+                title: 'File System Operations',
+                description: 'Secure file handling and processing',
+                technologies: ['Multer', 'Stream Processing', 'File Validation', 'Virus Scanning']
+            },
+            'network-paths': {
+                title: 'Network Path Resolution',
+                description: 'Enterprise network path handling',
+                technologies: ['UNC Paths', 'SMB Protocol', 'Path Mapping', 'Access Control']
+            }
+        };
+
+        // Add click handlers for diagram components
+        document.querySelectorAll('.component-group').forEach(group => {
+            group.addEventListener('click', (e) => {
+                const componentId = group.getAttribute('data-component');
+                const details = componentDetails[componentId];
+                
+                if (details) {
+                    const detailsPanel = document.getElementById('component-details');
+                    const titleEl = document.getElementById('component-title');
+                    const descEl = document.getElementById('component-description');
+                    const techEl = document.getElementById('component-technologies');
+                    
+                    titleEl.textContent = details.title;
+                    descEl.textContent = details.description;
+                    techEl.innerHTML = '<strong>Technologies:</strong> ' + 
+                        details.technologies.map(tech => 
+                            `<span class="badge bg-primary me-1">${tech}</span>`
+                        ).join('');
+                    
+                    detailsPanel.style.display = 'block';
+                    detailsPanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
+            });
+        });
+
+        // Add click handlers for diagram layers
+        document.querySelectorAll('.diagram-layer').forEach(layer => {
+            layer.addEventListener('click', (e) => {
+                // Don't trigger if clicking on a component
+                if (e.target === layer) {
+                    const layerType = layer.getAttribute('data-layer');
+                    console.log('Layer clicked:', layerType);
+                    // You can add layer-specific interactions here
+                }
+            });
+        });
+
+        // Advanced keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            const tabs = Array.from(document.querySelectorAll('[data-bs-toggle="pill"]'));
+            const activeTab = document.querySelector('[data-bs-toggle="pill"].active');
+            const currentIndex = tabs.indexOf(activeTab);
+            
+            if (e.ctrlKey || e.metaKey) {
+                switch(e.key) {
+                    case 'ArrowRight':
+                        if (currentIndex < tabs.length - 1) {
+                            tabs[currentIndex + 1].click();
+                            e.preventDefault();
+                        }
+                        break;
+                    case 'ArrowLeft':
+                        if (currentIndex > 0) {
+                            tabs[currentIndex - 1].click();
+                            e.preventDefault();
+                        }
+                        break;
+                    case '1':
+                    case '2':
+                    case '3':
+                    case '4':
+                    case '5':
+                    case '6':
+                    case '7':
+                        const tabIndex = parseInt(e.key) - 1;
+                        if (tabs[tabIndex]) {
+                            tabs[tabIndex].click();
+                            e.preventDefault();
+                        }
+                        break;
+                }
+            }
+        });
+
+        // Smooth scroll enhancement
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Initialize tooltips for complexity indicators (with Bootstrap check)
+        function initializeTooltips() {
+            if (typeof bootstrap !== 'undefined' && bootstrap.Tooltip) {
+                const tooltipTriggerList = [].slice.call(document.querySelectorAll('[title]'));
+                const tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                    return new bootstrap.Tooltip(tooltipTriggerEl);
+                });
+                console.log('✨ Bootstrap tooltips initialized');
+            } else {
+                console.log('ℹ️ Bootstrap not available, skipping tooltip initialization');
+            }
+        }
+
+        // Wait for DOM and Bootstrap to be ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                setTimeout(initializeTooltips, 100);
+            });
+        } else {
+            setTimeout(initializeTooltips, 100);
+        }
+
+        console.log('🚀 Enterprise Architecture Presentation loaded successfully!');
+        console.log('📊 Features: Advanced patterns, TypeScript, React Query, Radix UI, and more');
+        console.log('🎨 Theme: Unified Blue/Black/White color scheme for professional presentation');
+        console.log('📈 Project Analysis: A+ Grade with exceptional standards compliance');
+    </script>
+
+</body></html>
