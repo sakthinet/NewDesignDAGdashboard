@@ -1,0 +1,77 @@
+{
+  "type": "object",
+  "title": "Records",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "properties": {
+    "Record": {
+      "type": "object",
+      "properties": {
+        "Email": {
+          "type": "string"
+        },
+        "LastName": {
+          "type": "string"
+        },
+        "FirstName": {
+          "type": "string"
+        },
+        "CustomerID": {
+          "type": "string"
+        },
+        "Attachments": {
+          "type": "object",
+          "properties": {
+            "Attachment": {
+              "type": "object",
+              "properties": {
+                "Size": {
+                  "type": "number"
+                },
+                "EASFile": {
+                  "type": "string"
+                },
+                "FilePath": {
+                  "type": "string"
+                },
+                "checksum": {
+                  "type": "string",
+                  "xsd_extension_attributes": {
+                    "encoding": "xs:string",
+                    "algorithm": "xs:string"
+                  }
+                },
+                "mimetype": {
+                  "type": "string"
+                }
+              },
+              "xsd_sequence": [
+                "mimetype",
+                "Size",
+                "EASFile",
+                "checksum",
+                "FilePath"
+              ]
+            }
+          },
+          "xsd_sequence": [
+            "Attachment"
+          ]
+        },
+        "CreditCardNumber": {
+          "type": "string"
+        }
+      },
+      "xsd_sequence": [
+        "CustomerID",
+        "FirstName",
+        "LastName",
+        "Email",
+        "CreditCardNumber",
+        "Attachments"
+      ]
+    }
+  },
+  "xsd_sequence": [
+    "Record"
+  ]
+}
