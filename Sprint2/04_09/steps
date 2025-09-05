@@ -1,0 +1,9 @@
+1. source file selected -> no further process(single/multiple csv file)
+
+2.Generate PDI Schema -> Generate_pdi_schema_(DAG)- Read the csv/generate JSON
+
+3. Preview & Validate Schema - JSON->schema - Conversion_ (DAG)(XSD)
+
+4. Package into SIP - Generate_SIP_DAG(DAG)
+
+5. Import to InfoArchive - open now
