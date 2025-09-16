@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Message Queue Diagrams</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+            background: #f5f5f5;
+        }
+        .diagram-container {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .diagram {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 20px 0;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .service-box {
+            background: #4CAF50;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            text-align: center;
+            min-width: 120px;
+            font-weight: bold;
+        }
+        .queue-box {
+            background: #FF9800;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            text-align: center;
+            min-width: 120px;
+            font-weight: bold;
+            position: relative;
+        }
+        .queue-box::before {
+            content: "📨📨📨";
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            font-size: 12px;
+        }
+        .arrow {
+            font-size: 24px;
+            color: #333;
+            margin: 0 10px;
+        }
+        .message {
+            background: #2196F3;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            margin: 5px;
+            display: inline-block;
+        }
+        .vs-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .comparison-box {
+            background: #f9f9f9;
+            border: 2px solid #ddd;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        .sync {
+            border-color: #f44336;
+        }
+        .async {
+            border-color: #4CAF50;
+        }
+        h2 {
+            color: #333;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 10px;
+        }
+        h3 {
+            color: #555;
+            margin-top: 25px;
+        }
+        .example-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .flow-diagram {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+        .step {
+            background: #673AB7;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            width: 200px;
+            text-align: center;
+        }
+        .down-arrow {
+            font-size: 20px;
+            color: #673AB7;
+        }
+    </style>
+</head>
+<body>
+    <h1>Message Queue in Microservices - Visual Guide</h1>
+
+    <div class="diagram-container">
+        <h2>1. Basic Message Queue Concept</h2>
+        <div class="diagram">
+            <div class="service-box">Producer<br/>Service</div>
+            <div class="arrow">➡️</div>
+            <div class="queue-box">Message<br/>Queue</div>
+            <div class="arrow">➡️</div>
+            <div class="service-box">Consumer<br/>Service</div>
+        </div>
+        <div class="example-box">
+            <strong>Example:</strong> Order Service → Queue → Email Service<br/>
+            When an order is placed, it's sent to a queue for the email service to process asynchronously.
+        </div>
+    </div>
+
+    <div class="diagram-container">
+        <h2>2. Synchronous vs Asynchronous Communication</h2>
+        <div class="vs-section">
+            <div class="comparison-box sync">
+                <h3>❌ Without Message Queue (Synchronous)</h3>
+                <div class="diagram" style="flex-direction: column;">
+                    <div class="service-box" style="background: #f44336;">Order Service</div>
+                    <div class="down-arrow">⬇️ Direct Call</div>
+                    <div class="service-box" style="background: #f44336;">Email Service</div>
+                    <div class="down-arrow">⬇️ Wait for Response</div>
+                    <div style="color: #f44336; font-weight: bold;">❌ User waits<br/>❌ Services coupled<br/>❌ Failure affects all</div>
+                </div>
+            </div>
+            <div class="comparison-box async">
+                <h3>✅ With Message Queue (Asynchronous)</h3>
+                <div class="diagram" style="flex-direction: column;">
+                    <div class="service-box">Order Service</div>
+                    <div class="down-arrow">⬇️ Send Message</div>
+                    <div class="queue-box">Queue</div>
+                    <div class="down-arrow">⬇️ Process Later</div>
+                    <div class="service-box">Email Service</div>
+                    <div style="color: #4CAF50; font-weight: bold;">✅ Immediate response<br/>✅ Services decoupled<br/>✅ Fault tolerant</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="diagram-container">
+        <h2>3. Real-World E-commerce Example</h2>
+        <div class="flow-diagram">
+            <div class="step">User Places Order</div>
+            <div class="down-arrow">⬇️</div>
+            <div class="step">Order Service Creates Order</div>
+            <div class="down-arrow">⬇️</div>
+            <div class="step">Sends Messages to Queue</div>
+            <div class="down-arrow">⬇️</div>
+        </div>
+        
+        <div class="diagram" style="justify-content: space-around; flex-wrap: wrap;">
+            <div style="text-align: center;">
+                <div class="message">Order Created Event</div>
+                <div class="down-arrow">⬇️</div>
+                <div class="service-box" style="background: #9C27B0;">Email Service</div>
+                <small>Sends confirmation email</small>
+            </div>
+            
+            <div style="text-align: center;">
+                <div class="message">Inventory Update</div>
+                <div class="down-arrow">⬇️</div>
+                <div class="service-box" style="background: #FF5722;">Inventory Service</div>
+                <small>Updates stock levels</small>
+            </div>
+            
+            <div style="text-align: center;">
+                <div class="message">Payment Request</div>
+                <div class="down-arrow">⬇️</div>
+                <div class="service-box" style="background: #607D8B;">Payment Service</div>
+                <small>Processes payment</small>
+            </div>
+            
+            <div style="text-align: center;">
+                <div class="message">Shipping Info</div>
+                <div class="down-arrow">⬇️</div>
+                <div class="service-box" style="background: #795548;">Logistics Service</div>
+                <small>Arranges delivery</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="diagram-container">
+        <h2>4. Pub/Sub Pattern (Event-Driven)</h2>
+        <div class="diagram" style="flex-direction: column; align-items: center;">
+            <div class="service-box" style="background: #E91E63;">Event Publisher<br/>(Order Service)</div>
+            <div class="down-arrow">⬇️ Publishes "Order Created"</div>
+            <div class="queue-box" style="background: #3F51B5;">Message Broker<br/>(RabbitMQ/Kafka)</div>
+            <div class="down-arrow">⬇️ Distributes to Subscribers</div>
+            
+            <div class="diagram">
+                <div class="service-box" style="background: #009688;">Email<br/>Subscriber</div>
+                <div class="service-box" style="background: #FF5722;">Inventory<br/>Subscriber</div>
+                <div class="service-box" style="background: #607D8B;">Analytics<br/>Subscriber</div>
+                <div class="service-box" style="background: #795548;">Audit<br/>Subscriber</div>
+            </div>
+        </div>
+        <div class="example-box">
+            <strong>Benefit:</strong> One event triggers multiple actions across different services automatically.
+        </div>
+    </div>
+
+    <div class="diagram-container">
+        <h2>5. Popular Message Queue Technologies</h2>
+        <div class="diagram" style="justify-content: space-around;">
+            <div style="text-align: center;">
+                <div class="service-box" style="background: #FF6600;">RabbitMQ</div>
+                <small>Feature-rich<br/>Complex routing</small>
+            </div>
+            <div style="text-align: center;">
+                <div class="service-box" style="background: #000;">Apache Kafka</div>
+                <small>High throughput<br/>Event streaming</small>
+            </div>
+            <div style="text-align: center;">
+                <div class="service-box" style="background: #DC382D;">Redis</div>
+                <small>In-memory<br/>Simple & fast</small>
+            </div>
+            <div style="text-align: center;">
+                <div class="service-box" style="background: #FF9900;">AWS SQS</div>
+                <small>Managed service<br/>Auto-scaling</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="diagram-container">
+        <h2>6. Celery Message Queue Architecture</h2>
+        <div class="diagram" style="flex-direction: column;">
+            <div style="display: flex; align-items: center; justify-content: center; gap: 15px; margin: 20px 0;">
+                <div class="service-box" style="background: #8BC34A;">FastAPI App<br/>(Producer)</div>
+                <div class="arrow">➡️</div>
+                <div class="queue-box" style="background: #DC382D;">Redis/RabbitMQ<br/>(Broker)</div>
+                <div class="arrow">➡️</div>
+                <div class="service-box" style="background: #2196F3;">Celery Worker<br/>(Consumer)</div>
+            </div>
+            <div class="down-arrow">⬇️</div>
+            <div class="service-box" style="background: #FF5722; width: 200px;">Result Backend<br/>(Redis/Database)</div>
+        </div>
+        
+        <div class="example-box">
+            <strong>Celery Components:</strong><br/>
+            <strong>Broker:</strong> Stores task messages (Redis/RabbitMQ)<br/>
+            <strong>Worker:</strong> Executes tasks from the queue<br/>
+            <strong>Result Backend:</strong> Stores task results and status
+        </div>
+    </div>
+
+    <div class="diagram-container">
+        <h2>7. Celery in Apache Airflow - CeleryExecutor</h2>
+        <div class="flow-diagram">
+            <div class="step" style="background: #4CAF50;">Airflow Scheduler</div>
+            <div class="down-arrow">⬇️ Detects ready tasks</div>
+            <div class="step" style="background: #FF9800;">CeleryExecutor</div>
+            <div class="down-arrow">⬇️ Sends task to broker</div>
+            <div class="step" style="background: #DC382D;">Message Broker<br/>(Redis/RabbitMQ)</div>
+            <div class="down-arrow">⬇️ Workers pick up tasks</div>
+            <div class="diagram" style="justify-content: center; gap: 20px;">
+                <div class="service-box" style="background: #2196F3;">Celery Worker 1</div>
+                <div class="service-box" style="background: #2196F3;">Celery Worker 2</div>
+                <div class="service-box" style="background: #2196F3;">Celery Worker N</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="diagram-container">
+        <h2>8. Airflow Task Execution Flow with Celery</h2>
+        <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 20px; align-items: start;">
+            <div>
+                <h3>Step-by-Step Process:</h3>
+                <div class="step" style="font-size: 14px; margin: 10px 0; padding: 8px 15px;">1. DAG parsed</div>
+                <div class="step" style="font-size: 14px; margin: 10px 0; padding: 8px 15px;">2. Tasks queued</div>
+                <div class="step" style="font-size: 14px; margin: 10px 0; padding: 8px 15px;">3. Celery distributes</div>
+                <div class="step" style="font-size: 14px; margin: 10px 0; padding: 8px 15px;">4. Workers execute</div>
+                <div class="step" style="font-size: 14px; margin: 10px 0; padding: 8px 15px;">5. Results stored</div>
+            </div>
+            <div>
+                <div style="background: #f5f5f5; padding: 15px; border-radius: 8px;">
+                    <strong>Airflow Components:</strong><br/><br/>
+                    <strong>🕐 Scheduler:</strong> Monitors DAGs and triggers tasks<br/>
+                    <strong>🌐 Webserver:</strong> UI for monitoring and management<br/>
+                    <strong>⚙️ CeleryExecutor:</strong> Sends tasks to Celery workers<br/>
+                    <strong>👷 Workers:</strong> Execute actual task logic<br/>
+                    <strong>💾 Metadata DB:</strong> Stores DAG and task state<br/>
+                    <strong>📨 Broker:</strong> Message queue for task distribution
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="diagram-container">
+        <h2>9. Detailed Airflow-Celery Integration</h2>
+        <div style="border: 2px solid #4CAF50; border-radius: 10px; padding: 20px; background: #f9f9f9;">
+            <h3 style="margin-top: 0;">Complete Architecture</h3>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin: 20px 0;">
+                <!-- Control Plane -->
+                <div style="background: #e8f5e8; padding: 15px; border-radius: 8px;">
+                    <h4 style="color: #4CAF50; margin-top: 0;">Control Plane</h4>
+                    <div class="service-box" style="background: #4CAF50; margin: 5px 0; font-size: 12px;">Airflow Scheduler</div>
+                    <div class="service-box" style="background: #66BB6A; margin: 5px 0; font-size: 12px;">Airflow Webserver</div>
+                    <div class="service-box" style="background: #81C784; margin: 5px 0; font-size: 12px;">Metadata Database</div>
+                </div>
+                
+                <!-- Message Layer -->
+                <div style="background: #fff3e0; padding: 15px; border-radius: 8px;">
+                    <h4 style="color: #FF9800; margin-top: 0;">Message Layer</h4>
+                    <div class="queue-box" style="background: #FF9800; margin: 5px 0; font-size: 12px;">Redis Broker</div>
+                    <div class="service-box" style="background: #FFB74D; margin: 5px 0; font-size: 12px;">Result Backend</div>
+                </div>
+                
+                <!-- Execution Plane -->
+                <div style="background: #e3f2fd; padding: 15px; border-radius: 8px;">
+                    <h4 style="color: #2196F3; margin-top: 0;">Execution Plane</h4>
+                    <div class="service-box" style="background: #2196F3; margin: 5px 0; font-size: 12px;">Celery Worker 1</div>
+                    <div class="service-box" style="background: #42A5F5; margin: 5px 0; font-size: 12px;">Celery Worker 2</div>
+                    <div class="service-box" style="background: #64B5F6; margin: 5px 0; font-size: 12px;">Celery Worker N</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="diagram-container">
+        <h2>10. Configuration Example for Airflow + Celery</h2>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <div style="background: #f5f5f5; padding: 15px; border-radius: 8px;">
+                <h4>airflow.cfg Configuration</h4>
+                <pre style="background: #333; color: #fff; padding: 15px; border-radius: 5px; font-size: 12px; overflow-x: auto;">
+[core]
+executor = CeleryExecutor
+
+[celery]
+broker_url = redis://localhost:6379/0
+result_backend = redis://localhost:6379/0
+worker_concurrency = 16
+</pre>
+            </div>
+            <div style="background: #f5f5f5; padding: 15px; border-radius: 8px;">
+                <h4>Starting Workers</h4>
+                <pre style="background: #333; color: #fff; padding: 15px; border-radius: 5px; font-size: 12px; overflow-x: auto;">
+# Start Celery worker
+airflow celery worker
+
+# Monitor workers
+airflow celery flower
+
+# Check worker status
+celery -A airflow.executors.celery_executor \
+  inspect active
+</pre>
+            </div>
+        </div>
+    </div>
+
+    <div class="diagram-container">
+        <h2>11. Task Distribution Strategies in Airflow</h2>
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+            <div class="comparison-box" style="border-color: #9C27B0;">
+                <h3>🎯 Queue-based Distribution</h3>
+                <div style="font-size: 14px;">
+                    <div class="message" style="background: #9C27B0;">queue='data_processing'</div>
+                    <div class="message" style="background: #9C27B0;">queue='machine_learning'</div>
+                    <div class="message" style="background: #9C27B0;">queue='reporting'</div>
+                </div>
+                <p style="font-size: 12px; margin-top: 10px;">Workers subscribe to specific queues based on their capabilities</p>
+            </div>
+            <div class="comparison-box" style="border-color: #607D8B;">
+                <h3>⚖️ Load Balancing</h3>
+                <div style="display: flex; justify-content: space-around; font-size: 12px;">
+                    <div>Worker 1<br/>🔄 3 tasks</div>
+                    <div>Worker 2<br/>🔄 2 tasks</div>
+                    <div>Worker 3<br/>🔄 4 tasks</div>
+                </div>
+                <p style="font-size: 12px; margin-top: 10px;">Celery automatically distributes tasks to available workers</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="diagram-container">
+        <h2>12. Celery vs Other Executors in Airflow</h2>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;">
+            <div class="comparison-box" style="border-color: #f44336;">
+                <h3>Sequential Executor</h3>
+                <div class="service-box" style="background: #f44336; font-size: 12px;">Single Process<br/>One task at a time</div>
+                <p style="font-size: 12px;">✅ Simple setup<br/>❌ No parallelism<br/>❌ Development only</p>
+            </div>
+            <div class="comparison-box" style="border-color: #FF9800;">
+                <h3>Local Executor</h3>
+                <div class="service-box" style="background: #FF9800; font-size: 12px;">Multi-Process<br/>Same machine</div>
+                <p style="font-size: 12px;">✅ Parallel execution<br/>✅ Simple setup<br/>❌ Single machine limit</p>
+            </div>
+            <div class="comparison-box" style="border-color: #4CAF50;">
+                <h3>Celery Executor</h3>
+                <div class="service-box" style="background: #4CAF50; font-size: 12px;">Distributed<br/>Multiple machines</div>
+                <p style="font-size: 12px;">✅ Horizontal scaling<br/>✅ High availability<br/>⚠️ Complex setup</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="diagram-container">
+        <h2>13. Monitoring and Debugging Celery in Airflow</h2>
+        <div style="background: #f0f8ff; border: 2px solid #2196F3; border-radius: 10px; padding: 20px;">
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+                <div>
+                    <h4>🌸 Flower (Celery Monitor)</h4>
+                    <ul style="font-size: 14px;">
+                        <li>Real-time worker monitoring</li>
+                        <li>Task execution statistics</li>
+                        <li>Worker resource usage</li>
+                        <li>Task routing visualization</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4>🔍 Airflow UI Integration</h4>
+                    <ul style="font-size: 14px;">
+                        <li>Task instance logs</li>
+                        <li>Worker assignment info</li>
+                        <li>Queue status monitoring</li>
+                        <li>Task retry mechanisms</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="diagram-container">
+        <h2>14. Key Benefits Summary</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+            <div class="example-box" style="background: #e8f5e8;">
+                <strong>🔗 Decoupling</strong><br/>
+                Services don't need to know about each other
+            </div>
+            <div class="example-box" style="background: #e3f2fd;">
+                <strong>📈 Scalability</strong><br/>
+                Add more consumers to handle load
+            </div>
+            <div class="example-box" style="background: #fff3e0;">
+                <strong>🛡️ Reliability</strong><br/>
+                Messages persist until processed
+            </div>
+            <div class="example-box" style="background: #fce4ec;">
+                <strong>⚡ Performance</strong><br/>
+                Immediate response to users
+            </div>
+        </div>
+    </div>
+</body>
+</html>
